@@ -18,18 +18,6 @@
                 </div>
 
                 <div class="card-body">
-                    @if(session('success'))
-                    <div class="alert alert-success" role="alert">
-                        {{ session('success') }}
-                    </div>
-                    @endif
-
-                    @if(session('info'))
-                    <div class="alert alert-info" role="alert">
-                        {{ session('info') }}
-                    </div>
-                    @endif
-
                     <div class="mb-4">
                         <h4>Report Details</h4>
                         <table class="table table-bordered">
@@ -106,8 +94,6 @@
                         @include('reports.partials.issue_data')
                         @elseif($report->report_type == 'supplier')
                         @include('reports.partials.supplier_data')
-                        @elseif($report->report_type == 'department')
-                        @include('reports.partials.department_data')
                         @else
                         <p>No detailed data available for this report type</p>
                         @endif

@@ -33,11 +33,19 @@ class SupplierController extends Controller
             'name' => 'required|string|max:255',
             'contact_number' => 'required|string|max:255',
             'email' => 'required|email|max:255'
+        ], [
+            'name.required' => 'Supplier name is required.',
+            'contact_number.required' => 'Contact number is required.',
+            'email.required' => 'Email address is required.',
+            'email.email' => 'Please enter a valid email address.',
         ]);
 
-        Supplier::create($validated);
-
-        return redirect()->route('suppliers')->with('success', 'Supplier added successfully');
+        try {
+            Supplier::create($validated);
+            return redirect()->route('suppliers')->with('success', 'Supplier added successfully');
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('error', 'Failed to create supplier. Please try again.');
+        }
     }
 
     /**
@@ -69,11 +77,19 @@ class SupplierController extends Controller
             'name' => 'required|string|max:255',
             'contact_number' => 'required|string|max:255',
             'email' => 'required|email|max:255'
+        ], [
+            'name.required' => 'Supplier name is required.',
+            'contact_number.required' => 'Contact number is required.',
+            'email.required' => 'Email address is required.',
+            'email.email' => 'Please enter a valid email address.',
         ]);
 
-        $supplier->update($validated);
-
-        return redirect()->route('suppliers')->with('success', 'Supplier updated successfully');
+        try {
+            $supplier->update($validated);
+            return redirect()->route('suppliers')->with('success', 'Supplier updated successfully');
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('error', 'Failed to update supplier. Please try again.');
+        }
     }
 
     /**
@@ -81,16 +97,20 @@ class SupplierController extends Controller
      */
     public function destroy(string $id)
     {
-        $supplier = Supplier::findOrFail($id);
+        try {
+            $supplier = Supplier::findOrFail($id);
 
-        // Check if supplier is used in any purchase order
-        if ($supplier->purchaseOrders()->count() > 0) {
-            return redirect()->route('suppliers')
-                ->withErrors(['error' => 'Cannot delete supplier because it is used in one or more purchase orders.']);
+            // Check if supplier is used in any purchase order
+            if ($supplier->purchaseOrders()->count() > 0) {
+                return redirect()->route('suppliers')
+                    ->with('error', 'Cannot delete supplier because it is used in one or more purchase orders.');
+            }
+
+            $supplier->delete();
+            return redirect()->route('suppliers')->with('success', 'Supplier deleted successfully');
+        } catch (\Exception $e) {
+            return redirect()->route('suppliers')->with('error', 'Failed to delete supplier. Please try again.');
         }
-
-        $supplier->delete();
-        return redirect()->route('suppliers')->with('success', 'Supplier deleted successfully');
     }
 
     // Add this method to support AJAX supplier filtering by product

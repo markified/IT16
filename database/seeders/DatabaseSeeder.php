@@ -17,20 +17,26 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        if (!User::where('email', 'admin@gmail.com')->exists()) {
+        if (!User::where('email', 'balmesmarkclarence@gmail.com')->exists()) {
+            User::create([
+                'name' => 'Superadmin',
+                'email' => 'balmesmarkclarence@gmail.com',
+                'password' => bcrypt('SuperAdmin01'),
+                'role' => 'superadmin',
+            ]);
             User::create([
                 'name' => 'Admin',
                 'email' => 'admin@gmail.com',
-                'password' => bcrypt('password'),
-                'role' => 'admin',
+                'password' => bcrypt('Admin01'),
+                'role' => 'superadmin',
             ]);
         }
 
         // Call the other seeders
         $this->call([
             SupplierSeeder::class,
+            CategorySeeder::class,  // Categories must be seeded before products
             ProductSeeder::class,
-            DepartmentSeeder::class,
             EmployeeSeeder::class,
 
         ]);

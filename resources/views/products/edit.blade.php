@@ -4,7 +4,7 @@
 
 @section('contents')
 <div class="d-flex align-items-center justify-content-between">
-    <h1 class="mb-0">Computer Parts</h1>
+    <h1 class="mb-0">Edit PC Part</h1>
     <a href="{{ route('products') }}" class="btn btn-secondary">Back</a>
 </div>
 <hr />
@@ -23,13 +23,20 @@
             <label class="form-label">Type</label>
             <select name="type" class="form-control @error('type') is-invalid @enderror">
                 <option value="">-- Select Type --</option>
-                <option value="CPU" {{ old('type', $product->type) == 'CPU' ? 'selected' : '' }}>CPU</option>
-                <option value="RAM" {{ old('type', $product->type) == 'RAM' ? 'selected' : '' }}>RAM</option>
-                <option value="Storage" {{ old('type', $product->type) == 'Storage' ? 'selected' : '' }}>Storage</option>
+                <option value="CPU" {{ old('type', $product->type) == 'CPU' ? 'selected' : '' }}>CPU / Processor</option>
                 <option value="Motherboard" {{ old('type', $product->type) == 'Motherboard' ? 'selected' : '' }}>Motherboard</option>
-                <option value="Graphics Card" {{ old('type', $product->type) == 'Graphics Card' ? 'selected' : '' }}>Graphics Card</option>
-                <option value="Power Supply" {{ old('type', $product->type) == 'Power Supply' ? 'selected' : '' }}>Power Supply</option>
-                <option value="Peripheral" {{ old('type', $product->type) == 'Peripheral' ? 'selected' : '' }}>Peripheral</option>
+                <option value="RAM" {{ old('type', $product->type) == 'RAM' ? 'selected' : '' }}>RAM / Memory</option>
+                <option value="Graphics Card" {{ old('type', $product->type) == 'Graphics Card' ? 'selected' : '' }}>Graphics Card / GPU</option>
+                <option value="Storage" {{ old('type', $product->type) == 'Storage' ? 'selected' : '' }}>Storage (SSD/HDD)</option>
+                <option value="Power Supply" {{ old('type', $product->type) == 'Power Supply' ? 'selected' : '' }}>Power Supply (PSU)</option>
+                <option value="Case" {{ old('type', $product->type) == 'Case' ? 'selected' : '' }}>PC Case</option>
+                <option value="Cooling" {{ old('type', $product->type) == 'Cooling' ? 'selected' : '' }}>Cooling (Fan/Heatsink)</option>
+                <option value="Monitor" {{ old('type', $product->type) == 'Monitor' ? 'selected' : '' }}>Monitor</option>
+                <option value="Keyboard" {{ old('type', $product->type) == 'Keyboard' ? 'selected' : '' }}>Keyboard</option>
+                <option value="Mouse" {{ old('type', $product->type) == 'Mouse' ? 'selected' : '' }}>Mouse</option>
+                <option value="Network Card" {{ old('type', $product->type) == 'Network Card' ? 'selected' : '' }}>Network Card</option>
+                <option value="Sound Card" {{ old('type', $product->type) == 'Sound Card' ? 'selected' : '' }}>Sound Card</option>
+                <option value="Cables" {{ old('type', $product->type) == 'Cables' ? 'selected' : '' }}>Cables & Connectors</option>
                 <option value="Other" {{ old('type', $product->type) == 'Other' ? 'selected' : '' }}>Other</option>
             </select>
             @error('type')

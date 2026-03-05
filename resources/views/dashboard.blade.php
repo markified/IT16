@@ -1,34 +1,61 @@
 @extends('layouts.app')
 
 @section('contents')
-<h1 class="mb-0">Dashboard</h1>
-<hr />
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0 text-gray-800">PC Parts Inventory Dashboard</h1>
+        <p class="mb-0 text-muted">Welcome back! Here's your inventory overview.</p>
+    </div>
+    <div>
+        <a href="{{ route('stock-in.create') }}" class="btn btn-success me-2">
+            <i class="fas fa-plus"></i> Stock In
+        </a>
+        <a href="{{ route('inventory-issues.create') }}" class="btn btn-danger">
+            <i class="fas fa-minus"></i> Stock Out
+        </a>
+    </div>
+</div>
 
-<div class="row mb-4">
-    <!-- Total Products -->
+<!-- Stats Row 1 -->
+<div class="row">
     <div class="col-xl-3 col-md-6 mb-4">
         <div class="card border-left-primary shadow h-100 py-2">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Products</div>
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total PC Parts</div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalProducts }}</div>
                     </div>
                     <div class="col-auto">
-                        <i class="fas fa-box fa-2x text-gray-300"></i>
+                        <i class="fas fa-microchip fa-2x text-gray-300"></i>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Low Stock -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Inventory Value</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">₱{{ number_format($totalInventoryValue, 2) }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-peso-sign fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="col-xl-3 col-md-6 mb-4">
         <div class="card border-left-warning shadow h-100 py-2">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Low Stock Items</div>
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Low Stock Alerts</div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $lowStockItems }}</div>
                     </div>
                     <div class="col-auto">
@@ -39,13 +66,47 @@
         </div>
     </div>
 
-    <!-- Suppliers -->
     <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-success shadow h-100 py-2">
+        <div class="card border-left-danger shadow h-100 py-2">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Suppliers</div>
+                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Out of Stock</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $outOfStockItems }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-times-circle fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Row 2 -->
+<div class="row">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Categories</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalCategories }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-tags fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-secondary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">Suppliers</div>
                         <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalSuppliers }}</div>
                     </div>
                     <div class="col-auto">
@@ -56,34 +117,32 @@
         </div>
     </div>
 
-    <!-- Employees -->
     <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-info shadow h-100 py-2">
+        <div class="card border-left-success shadow h-100 py-2">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Employees</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalEmployees }}</div>
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Stock In Records</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalStockIn }}</div>
                     </div>
                     <div class="col-auto">
-                        <i class="fas fa-users fa-2x text-gray-300"></i>
+                        <i class="fas fa-arrow-down fa-2x text-gray-300"></i>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Total Purchase Orders -->
     <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-info shadow h-100 py-2">
+        <div class="card border-left-danger shadow h-100 py-2">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Purchase Orders</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalPurchaseOrders }}</div>
+                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Stock Out Records</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalStockOut }}</div>
                     </div>
                     <div class="col-auto">
-                        <i class="fas fa-file-invoice fa-2x text-gray-300"></i>
+                        <i class="fas fa-arrow-up fa-2x text-gray-300"></i>
                     </div>
                 </div>
             </div>
@@ -92,83 +151,153 @@
 </div>
 
 <div class="row">
-
-    <!-- Recent Activities -->
-    <div class="col-lg-6 mb-4">
+    <!-- Stock Movement Chart -->
+    <div class="col-xl-8 col-lg-7">
         <div class="card shadow mb-4">
             <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Recent Inventory Activities</h6>
+                <h6 class="m-0 font-weight-bold text-primary">Stock Movement (Last 6 Months)</h6>
             </div>
             <div class="card-body">
-                @if($recentActivities->count() > 0)
+                <div class="chart-area" style="height: 300px;">
+                    <canvas id="stockMovementChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Low Stock Alerts -->
+    <div class="col-xl-4 col-lg-5">
+        <div class="card shadow mb-4 border-left-warning">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-warning">Items Needing Attention</h6>
+                <a href="{{ route('inventory-reports.low-stock') }}" class="btn btn-sm btn-warning">View All</a>
+            </div>
+            <div class="card-body">
+                @if($topLowStock->count() > 0)
+                <div class="list-group list-group-flush">
+                    @foreach($topLowStock as $item)
+                    <a href="{{ route('products.show', $item->id) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ Str::limit($item->name, 25) }}</strong>
+                            <br><small class="text-muted">Min: {{ $item->min_stock_level }}</small>
+                        </div>
+                        <span class="badge {{ $item->quantity == 0 ? 'bg-danger' : 'bg-warning' }} rounded-pill">
+                            {{ $item->quantity }}
+                        </span>
+                    </a>
+                    @endforeach
+                </div>
+                @else
+                <div class="text-center py-4">
+                    <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                    <p class="mb-0 text-success">All items adequately stocked!</p>
+                </div>
+                @endif
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Recent Stock In -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-success">Recent Stock In</h6>
+                <a href="{{ route('stock-in.index') }}" class="btn btn-sm btn-success">View All</a>
+            </div>
+            <div class="card-body">
+                @if($recentStockIn->count() > 0)
                 <div class="table-responsive">
-                    <table class="table table-bordered" width="100%" cellspacing="0">
+                    <table class="table table-sm table-hover">
                         <thead>
                             <tr>
                                 <th>Date</th>
                                 <th>Product</th>
-                                <th>Assigned To</th>
-                                <th>Quantity</th>
+                                <th class="text-end">Qty</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($recentActivities as $activity)
+                            @foreach($recentStockIn as $stockIn)
                             <tr>
-                                <td>{{ $activity->issue_date }}</td>
-                                <td>{{ $activity->product->name }}</td>
-                                <td>{{ $activity->employee->name }}</td>
-                                <td>{{ $activity->quantity_issued }}</td>
+                                <td><small>{{ $stockIn->received_date }}</small></td>
+                                <td>{{ Str::limit($stockIn->product->name, 20) }}</td>
+                                <td class="text-end"><span class="text-success">+{{ $stockIn->quantity }}</span></td>
                             </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
                 @else
-                <p>No recent activities found.</p>
+                <p class="text-muted mb-0">No recent stock in records.</p>
+                @endif
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Stock Out -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-danger">Recent Stock Out</h6>
+                <a href="{{ route('inventory-issues') }}" class="btn btn-sm btn-danger">View All</a>
+            </div>
+            <div class="card-body">
+                @if($recentStockOut->count() > 0)
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Product</th>
+                                <th>Recipient</th>
+                                <th class="text-end">Qty</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($recentStockOut as $activity)
+                            <tr>
+                                <td><small>{{ $activity->issue_date }}</small></td>
+                                <td>{{ Str::limit($activity->product->name, 15) }}</td>
+                                <td>{{ Str::limit($activity->recipient ?? 'N/A', 10) }}</td>
+                                <td class="text-end"><span class="text-danger">-{{ $activity->quantity_issued }}</span></td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                @else
+                <p class="text-muted mb-0">No recent stock out records.</p>
                 @endif
             </div>
         </div>
     </div>
 </div>
 
+<!-- Category Summary -->
 <div class="row">
-    <!-- Pending Orders -->
-    <div class="col-lg-12 mb-4">
+    <div class="col-12">
         <div class="card shadow mb-4">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Pending Purchase Orders</h6>
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary">Category Overview</h6>
+                <a href="{{ route('inventory-reports.category') }}" class="btn btn-sm btn-primary">Full Report</a>
             </div>
             <div class="card-body">
-                @if($pendingOrders->count() > 0)
-                <div class="table-responsive">
-                    <table class="table table-bordered" width="100%" cellspacing="0">
-                        <thead>
-                            <tr>
-                                <th>Order ID</th>
-                                <th>Supplier</th>
-                                <th>Total Amount</th>
-                                <th>Created Date</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($pendingOrders as $order)
-                            <tr>
-                                <td>{{ $order->id }}</td>
-                                <td>{{ $order->supplier->name }}</td>
-                                <td>${{ number_format($order->total_amount, 2) }}</td>
-                                <td>{{ $order->created_at->format('Y-m-d') }}</td>
-                                <td>
-                                    <a href="{{ route('purchase-orders.show', $order->id) }}" class="btn btn-sm btn-primary">View</a>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                <div class="row">
+                    @forelse($stockByCategory as $category)
+                    <div class="col-xl-2 col-lg-3 col-md-4 col-6 mb-3">
+                        <div class="text-center p-3 border rounded">
+                            <div class="h4 mb-0 text-primary">{{ $category['stock'] }}</div>
+                            <small class="text-muted">{{ $category['name'] }}</small>
+                            <div class="small text-success">₱{{ number_format($category['value'], 0) }}</div>
+                        </div>
+                    </div>
+                    @empty
+                    <div class="col-12 text-center text-muted">
+                        <p>No categories defined. <a href="{{ route('categories.create') }}">Create one</a></p>
+                    </div>
+                    @endforelse
                 </div>
-                @else
-                <p>No pending purchase orders found.</p>
-                @endif
             </div>
         </div>
     </div>
@@ -179,53 +308,47 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const statusData = {
-            !!json_encode($itemsByStatus) !!
-        };
-        console.log(statusData);
-
-        const labels = statusData.map(item => item.status.charAt(0).toUpperCase() + item.status.slice(1));
-        const data = statusData.map(item => item.total);
-        const backgroundColor = [
-            '#4e73df', // available - blue
-            '#1cc88a', // assigned - green
-            '#f6c23e', // maintenance - yellow
-            '#e74a3b' // retired - red
-        ];
-
-        const ctx = document.getElementById('itemStatusChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: labels,
-                datasets: [{
-                    data: data,
-                    backgroundColor: backgroundColor,
-                    hoverBackgroundColor: backgroundColor,
-                    hoverBorderColor: "rgba(234, 236, 244, 1)",
-                }],
-            },
-            options: {
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: true,
-                        position: 'bottom'
-                    },
-                    tooltip: {
-                        backgroundColor: "rgb(255,255,255)",
-                        bodyColor: "#858796",
-                        borderColor: '#dddfeb',
-                        borderWidth: 1,
-                        padding: 15,
-                        displayColors: false,
-                        caretPadding: 10
+document.addEventListener('DOMContentLoaded', function() {
+    // Stock Movement Chart
+    const monthlyData = @json($monthlyMovement);
+    
+    const ctx = document.getElementById('stockMovementChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: monthlyData.map(item => item.month),
+            datasets: [{
+                label: 'Stock In',
+                data: monthlyData.map(item => item.in),
+                backgroundColor: 'rgba(40, 167, 69, 0.8)',
+                borderColor: 'rgba(40, 167, 69, 1)',
+                borderWidth: 1
+            }, {
+                label: 'Stock Out',
+                data: monthlyData.map(item => item.out),
+                backgroundColor: 'rgba(220, 53, 69, 0.8)',
+                borderColor: 'rgba(220, 53, 69, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
                     }
-                },
-                cutout: '80%',
+                }
             },
-        });
+            plugins: {
+                legend: {
+                    position: 'top',
+                }
+            }
+        }
     });
+});
 </script>
 @endpush

@@ -118,15 +118,6 @@
 
                                 <div id="issue-params" class="report-params">
                                     <h4>Issue Report Parameters</h4>
-                                    <div class="form-group mb-3">
-                                        <label for="department_id">Department</label>
-                                        <select class="form-control" id="department_id" name="department_id">
-                                            <option value="">All Departments</option>
-                                            @foreach($departments as $department)
-                                            <option value="{{ $department->id }}" {{ old('department_id') == $department->id ? 'selected' : '' }}>{{ $department->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
                                 </div>
 
                                 <div id="supplier-params" class="report-params">
@@ -137,19 +128,6 @@
                                             <option value="">All Suppliers</option>
                                             @foreach($suppliers as $supplier)
                                             <option value="{{ $supplier->id }}" {{ old('supplier_id') == $supplier->id ? 'selected' : '' }}>{{ $supplier->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div id="department-params" class="report-params">
-                                    <h4>Department Report Parameters</h4>
-                                    <div class="form-group mb-3">
-                                        <label for="department_id_filter">Specific Department</label>
-                                        <select class="form-control" id="department_id_filter" name="department_id">
-                                            <option value="">All Departments</option>
-                                            @foreach($departments as $department)
-                                            <option value="{{ $department->id }}" {{ old('department_id') == $department->id ? 'selected' : '' }}>{{ $department->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>

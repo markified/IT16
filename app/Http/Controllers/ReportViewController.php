@@ -14,7 +14,7 @@ class ReportViewController extends Controller
      */
     public function index()
     {
-        $reports = Report::with(['inventoryIssues.department', 'inventoryIssues.employee'])->get();
+        $reports = Report::with(['inventoryIssues.employee'])->get();
         return view('reports.view', compact('reports'));
     }
 
@@ -26,7 +26,7 @@ class ReportViewController extends Controller
      */
     public function show($id)
     {
-        $report = Report::with(['inventoryIssues.department', 'inventoryIssues.employee', 'suppliers'])->findOrFail($id);
+        $report = Report::with(['inventoryIssues.employee', 'suppliers'])->findOrFail($id);
         return view('reports.show', compact('report'));
     }
 }

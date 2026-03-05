@@ -11,8 +11,7 @@ class InventoryIssue extends Model
 
     protected $fillable = [
         'product_id',
-        'department_id',
-        'employee_id',
+        'recipient',
         'quantity_issued',
         'issue_date',
         'reason',
@@ -30,21 +29,5 @@ class InventoryIssue extends Model
     public function product()
     {
         return $this->belongsTo(Product::class);
-    }
-
-    /**
-     * Get the department associated with the inventory issue.
-     */
-    public function department()
-    {
-        return $this->belongsTo(Department::class);
-    }
-
-    /**
-     * Get the employee associated with the inventory issue.
-     */
-    public function employee()
-    {
-        return $this->belongsTo(Employee::class);
     }
 }

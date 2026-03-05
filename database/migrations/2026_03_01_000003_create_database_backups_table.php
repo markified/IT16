@@ -1,0 +1,38 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('database_backups', function (Blueprint $table) {
+            $table->id();
+            $table->string('filename');
+            $table->string('path');
+            $table->bigInteger('size')->default(0); // File size in bytes
+            $table->enum('type', ['manual', 'scheduled', 'auto'])->default('manual');
+            $table->enum('status', ['pending', 'completed', 'failed'])->default('pending');
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->text('notes')->nullable();
+            $table->text('error_message')->nullable();
+            $table->timestamps();
+            
+            $table->index('status');
+            $table->index('type');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('database_backups');
+    }
+};

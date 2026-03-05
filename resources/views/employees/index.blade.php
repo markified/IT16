@@ -20,7 +20,6 @@
             <th>#</th>
             <th>Name</th>
             <th>Contact Number</th>
-            <th>Department</th>
             <th>Action</th>
         </tr>
     </thead>
@@ -31,16 +30,15 @@
             <td class="align-middle">{{ $loop->iteration }}</td>
             <td class="align-middle">{{ $employee->name }}</td>
             <td class="align-middle">{{ $employee->contact_number }}</td>
-            <td class="align-middle">{{ $employee->department ? $employee->department->name : 'No Department' }}</td>
             <td class="align-middle">
                 <div class="btn-group" role="group">
                     <button type="button" class="btn btn-warning" onclick="$('#editEmployeeModal{{ $employee->id }}').modal('show')">
                         Edit
                     </button>
-                    <form action="{{ route('employees.destroy', $employee->id) }}" method="POST" class="btn btn-danger p-0" onsubmit="return confirm('Are you sure you want to delete this employee?')">
+                    <form action="{{ route('employees.destroy', $employee->id) }}" method="POST" class="btn btn-danger p-0">
                         @csrf
                         @method('DELETE')
-                        <button class="btn btn-danger m-0">Delete</button>
+                        <button type="button" class="btn btn-danger m-0" data-confirm-delete="Are you sure you want to delete this employee? This action cannot be undone.">Delete</button>
                     </form>
                 </div>
             </td>
@@ -72,20 +70,6 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label">Department</label>
-                                <select name="department_id" class="form-control @error('department_id') is-invalid @enderror">
-                                    <option value="">Select Department</option>
-                                    @foreach($departments as $department) <!-- Corrected variable name -->
-                                    <option value="{{ $department->id }}" {{ $employee->department_id == $department->id ? 'selected' : '' }}>
-                                        {{ $department->name }}
-                                    </option>
-                                    @endforeach
-                                </select>
-                                @error('department_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
                         </div>
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-warning">Update</button>
@@ -97,7 +81,7 @@
         @endforeach
         @else
         <tr>
-            <td class="text-center" colspan="5">No employees found</td>
+            <td class="text-center" colspan="3">No employees found</td>
         </tr>
         @endif
     </tbody>
@@ -123,15 +107,6 @@
                     <div class="mb-3">
                         <label for="contact_number" class="form-label">Contact Number</label>
                         <input type="text" class="form-control" id="contact_number" name="contact_number" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="department_id" class="form-label">Department</label>
-                        <select id="department_id" name="department_id" class="form-control" required>
-                            <option value="">Select Department</option>
-                            @foreach($departments as $department)
-                            <option value="{{ $department->id }}">{{ $department->name }}</option>
-                            @endforeach
-                        </select>
                     </div>
                 </div>
                 <div class="modal-footer">

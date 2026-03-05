@@ -25,7 +25,7 @@
                 <strong>Supplier:</strong> {{ $purchaseOrder->supplier->name }}
             </div>
             <div class="col-md-6">
-                <strong>Total Amount:</strong> ${{ number_format($purchaseOrder->total_amount, 2) }}
+                <strong>Total Amount:</strong> ₱{{ number_format($purchaseOrder->total_amount, 2) }}
             </div>
         </div>
         <div class="row mb-2">
@@ -70,8 +70,8 @@
                             <td>{{ $detail->product->name ?? 'Product not found' }}</td>
                             <td>{{ $detail->product->type ?? '-' }}</td>
                             <td class="text-end">{{ $detail->quantity_ordered }}</td>
-                            <td class="text-end">${{ number_format($detail->price_per_item, 2) }}</td>
-                            <td class="text-end">${{ number_format($detail->price_per_item * $detail->quantity_ordered, 2) }}</td>
+                            <td class="text-end">₱{{ number_format($detail->price_per_item, 2) }}</td>
+                            <td class="text-end">₱{{ number_format($detail->price_per_item * $detail->quantity_ordered, 2) }}</td>
                             <td class="text-end">{{ $received }}</td>
                             <td>
                                 <span class="badge bg-{{

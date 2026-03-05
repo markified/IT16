@@ -16,9 +16,6 @@
             <div class="card-body">
                 <h4 class="card-title">{{ $employee->name }}</h4>
                 <p class="card-text"><strong>Contact Number:</strong> {{ $employee->contact_number }}</p>
-                <p class="card-text"><strong>Department:</strong>
-                    {{ $employee->department ? $employee->department->name : 'No Department Assigned' }}
-                </p>
             </div>
         </div>
 
@@ -27,7 +24,7 @@
         <form action="{{ route('employees.destroy', $employee->id) }}" method="POST" style="display: inline-block;">
             @csrf
             @method('DELETE')
-            <button type="submit" class="btn btn-danger mt-3" onclick="return confirm('Are you sure you want to delete this employee?')">Delete</button>
+            <button type="button" class="btn btn-danger mt-3" data-confirm-delete="Are you sure you want to delete this employee? This action cannot be undone.">Delete</button>
         </form>
     </div>
 </body>

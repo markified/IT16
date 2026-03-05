@@ -4,7 +4,7 @@
 
 @section('contents')
 <div class="d-flex align-items-center justify-content-between">
-    <h1 class="mb-0">Computer Parts</h1>
+    <h1 class="mb-0">PC Part Details</h1>
     <div class="ms-auto">
         <a href="{{ route('products') }}" class="btn btn-secondary">Back</a>
         <a href="{{ route('products.edit', $product->id) }}" class="btn btn-warning">Edit</a>
@@ -47,7 +47,7 @@
                 </div>
                 <div class="row mb-3">
                     <div class="col-md-4 fw-bold">Price per Item:</div>
-                    <div class="col-md-8">${{ number_format($product->price_per_item, 2) }}</div>
+                    <div class="col-md-8">₱{{ number_format($product->price_per_item, 2) }}</div>
                 </div>
                 
             </div>

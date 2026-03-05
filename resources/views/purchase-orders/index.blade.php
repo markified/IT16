@@ -46,7 +46,7 @@
                         <td>{{ $po->id }}</td>
                         <td>{{ $po->supplier->name }}</td>
                         <td>{{ $po->created_at->format('M d, Y') }}</td>
-                        <td class="text-end fw-bold">${{ number_format($po->total_amount, 2) }}</td>
+                        <td class="text-end fw-bold">₱{{ number_format($po->total_amount, 2) }}</td>
                         <td>
                             <span class="badge bg-{{ 
                                 $po->status == 'pending' ? 'warning' : 
@@ -66,8 +66,8 @@
                                 <form action="{{ route('purchase-orders.destroy', $po->id) }}" method="POST">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm"
-                                            onclick="return confirm('Are you sure you want to delete this purchase order?')">
+                                    <button type="button" class="btn btn-danger btn-sm"
+                                            data-confirm-delete="Are you sure you want to delete this purchase order? This action cannot be undone.">
                                         <i class="fa fa-trash"></i> Delete
                                     </button>
                                 </form>

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Employee;
-use App\Models\Department;
 use Illuminate\Http\Request;
 
 class EmployeeController extends Controller
@@ -13,9 +12,8 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        $employees = Employee::with('department')->orderBy('created_at', 'DESC')->get();
-        $departments = Department::all();
-        return view('employees.index', compact('employees', 'departments'));
+        $employees = Employee::orderBy('created_at', 'DESC')->get();
+        return view('employees.index', compact('employees'));
     }
 
     /**
@@ -23,8 +21,7 @@ class EmployeeController extends Controller
      */
     public function create()
     {
-        $departments = Department::all();
-        return view('employees.create', compact('departments'));
+        return view('employees.create');
     }
 
     /**
@@ -35,7 +32,6 @@ class EmployeeController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'contact_number' => 'required|string|max:15',
-            'department_id' => 'required|exists:departments,id',
         ]);
 
         Employee::create($validated);
@@ -48,7 +44,7 @@ class EmployeeController extends Controller
      */
     public function show(string $id)
     {
-        $employee = Employee::with('department')->findOrFail($id);
+        $employee = Employee::findOrFail($id);
         return view('employees.show', compact('employee'));
     }
 
@@ -58,8 +54,7 @@ class EmployeeController extends Controller
     public function edit(string $id)
     {
         $employee = Employee::findOrFail($id);
-        $departments = Department::all();
-        return view('employees.edit', compact('employee', 'departments'));
+        return view('employees.edit', compact('employee'));
     }
 
     /**
@@ -72,7 +67,6 @@ class EmployeeController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'contact_number' => 'required|string|max:15',
-            'department_id' => 'required|exists:departments,id',
         ]);
 
         $employee->update($validated);

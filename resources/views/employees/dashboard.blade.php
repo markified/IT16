@@ -153,7 +153,7 @@
                             <tr>
                                 <td>{{ $order->id }}</td>
                                 <td>{{ $order->supplier->name }}</td>
-                                <td>${{ number_format($order->total_amount, 2) }}</td>
+                                <td>₱{{ number_format($order->total_amount, 2) }}</td>
                                 <td>{{ $order->created_at->format('Y-m-d') }}</td>
                                 <td>
                                     <a href="{{ route('purchase-orders.show', $order->id) }}" class="btn btn-sm btn-primary">View</a>

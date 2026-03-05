@@ -5,16 +5,48 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Supplier;
+use App\Models\Category;
 
 class ProductController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with('supplier')->orderBy('created_at', 'DESC')->get();
-        return view('products.index', compact('products'));
+        $query = Product::with(['supplier', 'category'])->orderBy('created_at', 'DESC');
+
+        // Search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('sku', 'like', "%{$search}%")
+                  ->orWhere('barcode', 'like', "%{$search}%")
+                  ->orWhere('brand', 'like', "%{$search}%");
+            });
+        }
+
+        // Category filter
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        // Stock status filter
+        if ($request->filled('stock_status')) {
+            if ($request->stock_status === 'low') {
+                $query->whereRaw('quantity <= min_stock_level AND quantity > 0');
+            } elseif ($request->stock_status === 'out') {
+                $query->where('quantity', 0);
+            } elseif ($request->stock_status === 'in') {
+                $query->whereRaw('quantity > min_stock_level');
+            }
+        }
+
+        $products = $query->get();
+        $categories = Category::where('is_active', true)->orderBy('name')->get();
+
+        return view('products.index', compact('products', 'categories'));
     }
 
     /**
@@ -22,35 +54,58 @@ class ProductController extends Controller
      */
     public function create()
     {
-        $suppliers = \App\Models\Supplier::all();
-        return view('products.create', compact('suppliers'));
+        $suppliers = Supplier::all();
+        $categories = Category::where('is_active', true)->orderBy('name')->get();
+        return view('products.create', compact('suppliers', 'categories'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {   \Log::info($request->all());
+    {
         $validated = $request->validate([
+            'category_id' => 'nullable|exists:categories,id',
             'name' => 'required|string|max:255',
+            'brand' => 'nullable|string|max:255',
+            'model_number' => 'nullable|string|max:255',
             'description' => 'required|string',
             'type' => 'required|string|max:255',
             'quantity' => 'required|integer|min:0',
             'min_stock_level' => 'required|integer|min:0',
             'specifications' => 'nullable|string',
+            'location' => 'nullable|string|max:255',
             'price_per_item' => 'required|numeric|min:0',
+            'cost_price' => 'nullable|numeric|min:0',
             'status' => 'required|in:available,assigned,maintenance,retired',
             'suppliers' => 'array',
             'suppliers.*' => 'exists:suppliers,id',
+        ], [
+            'name.required' => 'Product name is required.',
+            'description.required' => 'Product description is required.',
+            'type.required' => 'Product type is required.',
+            'quantity.required' => 'Quantity is required.',
+            'quantity.min' => 'Quantity cannot be negative.',
+            'min_stock_level.required' => 'Minimum stock level is required.',
+            'price_per_item.required' => 'Price per item is required.',
+            'price_per_item.min' => 'Price cannot be negative.',
+            'status.required' => 'Status is required.',
+            'status.in' => 'Invalid status selected.',
         ]);
 
-        // Automatically generate a unique serial number
-        $validated['serial_number'] = 'SN-' . strtoupper(uniqid());
+        try {
+            // Auto-generate serial number and barcode
+            $validated['serial_number'] = 'SN-' . strtoupper(uniqid());
+            $validated['barcode'] = $request->barcode ?: Product::generateBarcode();
+            $validated['cost_price'] = $validated['cost_price'] ?? 0;
 
-        $product = Product::create($validated);
-        $product->suppliers()->sync($request->input('suppliers', []));
+            $product = Product::create($validated);
+            $product->suppliers()->sync($request->input('suppliers', []));
 
-        return redirect()->route('products')->with('success', 'Product added successfully');
+            return redirect()->route('products')->with('success', 'PC part added successfully');
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('error', 'Failed to create product. Please try again.');
+        }
     }
 
     /**
@@ -58,7 +113,7 @@ class ProductController extends Controller
      */
     public function show(string $id)
     {
-        $product = Product::with('supplier')->findOrFail($id);
+        $product = Product::with(['supplier', 'category', 'suppliers', 'stockIns', 'stockAdjustments', 'inventoryIssues'])->findOrFail($id);
         return view('products.show', compact('product'));
     }
 
@@ -68,8 +123,9 @@ class ProductController extends Controller
     public function edit(string $id)
     {
         $product = Product::with('suppliers')->findOrFail($id);
-        $suppliers = \App\Models\Supplier::all();
-        return view('products.edit', compact('product', 'suppliers'));
+        $suppliers = Supplier::all();
+        $categories = Category::where('is_active', true)->orderBy('name')->get();
+        return view('products.edit', compact('product', 'suppliers', 'categories'));
     }
 
     /**
@@ -80,22 +136,47 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
 
         $validated = $request->validate([
+            'category_id' => 'nullable|exists:categories,id',
             'name' => 'required|string|max:255',
+            'brand' => 'nullable|string|max:255',
+            'model_number' => 'nullable|string|max:255',
             'description' => 'required|string',
             'type' => 'required|string|max:255',
             'quantity' => 'required|integer|min:0',
             'min_stock_level' => 'required|integer|min:0',
             'serial_number' => 'nullable|string|max:255|unique:products,serial_number,' . $id,
+            'sku' => 'nullable|string|max:255|unique:products,sku,' . $id,
+            'barcode' => 'nullable|string|max:255|unique:products,barcode,' . $id,
             'specifications' => 'nullable|string',
+            'location' => 'nullable|string|max:255',
+            'price_per_item' => 'required|numeric|min:0',
+            'cost_price' => 'nullable|numeric|min:0',
             'status' => 'required|in:available,assigned,maintenance,retired',
             'suppliers' => 'array',
             'suppliers.*' => 'exists:suppliers,id',
+        ], [
+            'name.required' => 'Product name is required.',
+            'description.required' => 'Product description is required.',
+            'type.required' => 'Product type is required.',
+            'quantity.required' => 'Quantity is required.',
+            'quantity.min' => 'Quantity cannot be negative.',
+            'serial_number.unique' => 'This serial number is already in use.',
+            'sku.unique' => 'This SKU is already in use.',
+            'barcode.unique' => 'This barcode is already in use.',
+            'price_per_item.required' => 'Price per item is required.',
+            'price_per_item.min' => 'Price cannot be negative.',
         ]);
 
-        $product->update($validated);
-        $product->suppliers()->sync($request->input('suppliers', []));
+        try {
+            $validated['cost_price'] = $validated['cost_price'] ?? 0;
 
-        return redirect()->route('products')->with('success', 'Product updated successfully');
+            $product->update($validated);
+            $product->suppliers()->sync($request->input('suppliers', []));
+
+            return redirect()->route('products')->with('success', 'PC part updated successfully');
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('error', 'Failed to update product. Please try again.');
+        }
     }
 
     /**
@@ -103,9 +184,13 @@ class ProductController extends Controller
      */
     public function destroy(string $id)
     {
-        $product = Product::findOrFail($id);
-        $product->delete();
-        return redirect()->route('products')->with('success', 'Product deleted successfully');
+        try {
+            $product = Product::findOrFail($id);
+            $product->delete();
+            return redirect()->route('products')->with('success', 'PC part deleted successfully');
+        } catch (\Exception $e) {
+            return redirect()->route('products')->with('error', 'Failed to delete product. It may have associated records.');
+        }
     }
 
     /**

@@ -45,10 +45,10 @@
                     <button type="button" class="btn btn-warning" onclick="$('#editSupplierModal{{ $supplier->id }}').modal('show')">
                         Edit
                     </button>
-                    <form action="{{ route('suppliers.destroy', $supplier->id) }}" method="POST" class="btn btn-danger p-0" onsubmit="return confirm('Are you sure you want to delete this supplier?')">
+                    <form action="{{ route('suppliers.destroy', $supplier->id) }}" method="POST" class="btn btn-danger p-0">
                         @csrf
                         @method('DELETE')
-                        <button class="btn btn-danger m-0">Delete</button>
+                        <button type="button" class="btn btn-danger m-0" data-confirm-delete="Are you sure you want to delete this supplier? This action cannot be undone.">Delete</button>
                     </form>
                 </div>
             </td>

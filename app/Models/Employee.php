@@ -11,14 +11,8 @@ class Employee extends Model
 
     protected $fillable = [
         'name',
-        'contact_number',
-        'department_id'
+        'contact_number'
     ];
-
-    public function department()
-    {
-        return $this->belongsTo(Department::class);
-    }
 
     public function inventoryIssues()
     {

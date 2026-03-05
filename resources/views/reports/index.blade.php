@@ -13,12 +13,6 @@
                 </div>
 
                 <div class="card-body">
-                    @if(session('success'))
-                    <div class="alert alert-success" role="alert">
-                        {{ session('success') }}
-                    </div>
-                    @endif
-
                     <div class="table-responsive">
                         <table class="table table-striped">
                             <thead>
@@ -52,10 +46,10 @@
                                             <a href="{{ route('reports.download', $report->id) }}" class="btn btn-sm btn-success">
                                                 <i class="fas fa-download"></i> Download
                                             </a>
-                                            <form action="{{ route('reports.destroy', $report->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this report?');">
+                                            <form action="{{ route('reports.destroy', $report->id) }}" method="POST">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                <button type="button" class="btn btn-sm btn-danger" data-confirm-delete="Are you sure you want to delete this report? This action cannot be undone.">
                                                     <i class="fas fa-trash"></i> Delete
                                                 </button>
                                             </form>

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Report;
-use App\Models\Department;
 use App\Models\Employee;
 use App\Models\Product;
 use App\Models\PurchaseOrder;
@@ -32,10 +31,9 @@ class ReportController extends Controller
      */
     public function create()
     {
-        $reportTypes = ['inventory', 'purchase_order', 'issue', 'supplier', 'department'];
-        $departments = Department::all();
+        $reportTypes = ['inventory', 'purchase_order', 'issue', 'supplier'];
         $suppliers = Supplier::all();
-        return view('reports.create', compact('reportTypes', 'departments', 'suppliers'));
+        return view('reports.create', compact('reportTypes', 'suppliers'));
     }
 
     /**
@@ -48,7 +46,7 @@ class ReportController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'report_type' => 'required|in:inventory,purchase_order,issue,supplier,department',
+            'report_type' => 'required|in:inventory,purchase_order,issue,supplier',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
         ]);
@@ -96,10 +94,9 @@ class ReportController extends Controller
      */
     public function edit(Report $report)
     {
-        $reportTypes = ['inventory', 'purchase_order', 'issue', 'supplier', 'department'];
-        $departments = Department::all();
+        $reportTypes = ['inventory', 'purchase_order', 'issue', 'supplier'];
         $suppliers = Supplier::all();
-        return view('reports.edit', compact('report', 'reportTypes', 'departments', 'suppliers'));
+        return view('reports.edit', compact('report', 'reportTypes', 'suppliers'));
     }
 
     /**
@@ -113,7 +110,7 @@ class ReportController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'report_type' => 'required|in:inventory,purchase_order,issue,supplier,department',
+            'report_type' => 'required|in:inventory,purchase_order,issue,supplier',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
         ]);
@@ -211,31 +208,19 @@ class ReportController extends Controller
             case 'issue':
                 $query = DB::table('inventory_issues')
                     ->join('products', 'inventory_issues.product_id', '=', 'products.id')
-                    ->join('departments', 'inventory_issues.department_id', '=', 'departments.id')
                     ->join('employees', 'inventory_issues.employee_id', '=', 'employees.id')
                     ->select(
                         'inventory_issues.*',
                         'products.name as product_name',
-                        'departments.name as department_name',
                         'employees.name as employee_name'
                     )
                     ->whereBetween('issue_date', [$startDate, $endDate]);
-
-                if (!empty($parameters['department_id'])) {
-                    $query->where('department_id', $parameters['department_id']);
-                }
 
                 $issues = $query->get();
                 $data['issues'] = $issues->toArray();
                 $data['summary'] = [
                     'total_issues' => $issues->count(),
                     'total_items_issued' => $issues->sum('quantity_issued'),
-                    'departments' => $issues->groupBy('department_name')->map(function ($items) {
-                        return [
-                            'count' => $items->count(),
-                            'total_quantity' => $items->sum('quantity_issued')
-                        ];
-                    }),
                 ];
                 break;
 
@@ -258,28 +243,6 @@ class ReportController extends Controller
                     'total_amount' => $suppliers->flatMap(function ($supplier) {
                         return $supplier->purchaseOrders;
                     })->sum('total_amount'),
-                ];
-                break;
-
-            case 'department':
-                $query = Department::with(['inventoryIssues' => function ($q) use ($startDate, $endDate) {
-                    $q->whereBetween('issue_date', [$startDate, $endDate]);
-                }]);
-
-                if (!empty($parameters['department_id'])) {
-                    $query->where('id', $parameters['department_id']);
-                }
-
-                $departments = $query->get();
-                $data['departments'] = $departments->toArray();
-                $data['summary'] = [
-                    'total_departments' => $departments->count(),
-                    'total_issues' => $departments->flatMap(function ($department) {
-                        return $department->inventoryIssues;
-                    })->count(),
-                    'total_items_issued' => $departments->flatMap(function ($department) {
-                        return $department->inventoryIssues;
-                    })->sum('quantity_issued'),
                 ];
                 break;
         }

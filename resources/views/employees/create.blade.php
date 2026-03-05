@@ -22,15 +22,6 @@
                 <label for="contact_number" class="form-label">Contact Number</label>
                 <input type="text" class="form-control" id="contact_number" name="contact_number" required>
             </div>
-            <div class="mb-3">
-                <label for="department_id" class="form-label">Department</label>
-                <select class="form-select" id="department_id" name="department_id" required>
-                    <option value="">Select a department</option>
-                    @foreach($departments as $department)
-                    <option value="{{ $department->id }}">{{ $department->name }}</option>
-                    @endforeach
-                </select>
-            </div>
             <button type="submit" class="btn btn-primary">Create Employee</button>
         </form>
     </div>

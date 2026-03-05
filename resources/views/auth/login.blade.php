@@ -15,93 +15,328 @@
     <!-- Custom styles for this template-->
     <link href="{{ asset('admin_assets/css/sb-admin-2.min.css') }}" rel="stylesheet">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
         body {
+            font-family: 'Nunito', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            color: white;
+            min-height: 100vh;
             background: url("{{ asset('image/bg6.png') }}") no-repeat center center;
             background-size: cover;
+            position: relative;
         }
 
-        .card {
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 20, 60, 0.6);
+            z-index: 0;
+        }
+
+        .floating-container {
+            position: relative;
+            z-index: 1;
             width: 100%;
-            max-width: 400px;
-            border-radius: 30px;
-            background: rgba(0, 29, 109, 0.93);
+            max-width: 480px;
+            margin: 20px;
+            padding: 40px;
+            background: linear-gradient(135deg, #001d6d 0%, #002a8f 50%, #0039b3 100%);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
         }
 
-        /* Style for input fields */
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-header h1 {
+            color: #ffffff;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .form-header p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
         .form-control {
-            color: #000000 !important; /* Black color for typed text */
-            background-color: #ffffff !important; /* White background */
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #333333;
+            font-size: 15px;
+            transition: all 0.3s ease;
         }
 
-        /* Style for placeholder text */
+        .form-control:focus {
+            outline: none;
+            border-color: #0096ff;
+            box-shadow: 0 0 0 4px rgba(0, 150, 255, 0.2);
+        }
+
         .form-control::placeholder {
-            color: #999999 !important; /* Gray color for placeholder */
-            opacity: 1 !important;
+            color: #999999;
         }
 
-        .form-control::-webkit-input-placeholder {
-            color: #999999 !important;
+        .form-control.is-invalid {
+            border-color: #e74a3b;
         }
 
-        .form-control::-moz-placeholder {
-            color: #999999 !important;
+        .invalid-feedback {
+            color: #ff6b6b;
+            font-size: 12px;
+            margin-top: 6px;
         }
 
-        .form-control:-ms-input-placeholder {
-            color: #999999 !important;
+        .alert-success {
+            background: rgba(40, 167, 69, 0.15);
+            border: 1px solid rgba(40, 167, 69, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #28a745;
+            font-size: 13px;
+        }
+
+        .alert-danger {
+            background: rgba(231, 74, 59, 0.15);
+            border: 1px solid rgba(231, 74, 59, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .alert-danger ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #ff6b6b;
+            font-size: 13px;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #0096ff 0%, #0077cc 100%);
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-login:hover {
+            background: linear-gradient(135deg, #00a8ff 0%, #0088dd 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 150, 255, 0.4);
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .forgot-password a {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password a:hover {
+            color: #0096ff;
+            text-decoration: underline;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 25px 0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .divider span {
+            padding: 0 15px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 13px;
+        }
+
+        .register-link {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+
+        .register-link a {
+            color: #0096ff;
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .register-link a:hover {
+            color: #00b4ff;
+            text-decoration: underline;
+        }
+
+        .captcha-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .captcha-question {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px 18px;
+            border-radius: 12px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 16px;
+            white-space: nowrap;
+        }
+
+        /* Responsive */
+        @media (max-width: 576px) {
+            .floating-container {
+                margin: 15px;
+                padding: 30px 25px;
+            }
+
+            .form-header h1 {
+                font-size: 24px;
+            }
+
+            .captcha-wrapper {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .captcha-question {
+                text-align: center;
+            }
         }
     </style>
 </head>
 
-<body class="">
-    <div class="container">
-        <!-- Outer Row -->
-        <div class="row justify-content-center">
-            <div class="col-xl-10 col-lg-12 col-md-9">
-                <div class="d-flex justify-content-center align-items-center vh-100">
-                    <div class="card o-hidden border-0 shadow-lg">
-                        <div class="card-body p-4">
-                            <div class="text-center mb-4">
-                                <img src="{{ asset('image/logo.png') }}" alt="Logo" style="width: 250px; height: auto;" class="mb-3"> 
-                                <h1 class="h4 text-white-900" style="color: rgb(255, 255, 255); font-family: ', sans-serif;">Welcome Back!</h1>
-                            </div>
-                            <form action="{{ route('login.action') }}" method="POST" class="user">
-                                @csrf
-                                @if ($errors->any())
-                                <div class="alert alert-danger">
-                                    <ul>
-                                        @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-                                @endif
-                                <div class="form-group">
-                                    <input name="email" type="email" class="form-control form-control-user" placeholder="Enter Email Address...">
-                                </div>
-                                <div class="form-group">
-                                    <input name="password" type="password" class="form-control form-control-user" placeholder="Password">
-                                </div>
+<body>
+    <div class="floating-container">
+        <div class="form-header">
+            <h1><i class="fas fa-sign-in-alt mr-2"></i> Welcome Back!</h1>
+            <p>Sign in to continue to your account</p>
+        </div>
 
-                                <button type="submit" class="btn btn-primary btn-user btn-block" style="background-color: rgb(0, 150, 255); border-color: #000000;">Login</button>
-                            </form>
-                            <hr>
-                            <div class="text-center text-white-900">
-                                Don't have an account?
-                                <a class="small text-white" href="{{ route('register') }}">Create an Account!</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <form action="{{ route('login.action') }}" method="POST">
+            @csrf
+            @if (session('status'))
+            <div class="alert alert-success">
+                {{ session('status') }}
             </div>
+            @endif
+            @if (session('info'))
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>{{ session('info') }}
+            </div>
+            @endif
+            @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+            @endif
+
+            <div class="form-group">
+                <label for="email">Email Address <span class="text-danger">*</span></label>
+                <input name="email" id="email" type="email" class="form-control @error('email') is-invalid @enderror" placeholder="Enter your email address" value="{{ old('email') }}" required>
+                @error('email')
+                <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password <span class="text-danger">*</span></label>
+                <input name="password" id="password" type="password" class="form-control @error('password') is-invalid @enderror" placeholder="Enter your password" required>
+                @error('password')
+                <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="form-group">
+                <label for="captcha">Security Check <span class="text-danger">*</span></label>
+                <div class="captcha-wrapper">
+                    <div class="captcha-question">
+                        <i class="fas fa-shield-alt mr-2"></i>{{ $captcha_question ?? '0 + 0 = ?' }}
+                    </div>
+                    <input name="captcha" id="captcha" type="number" class="form-control @error('captcha') is-invalid @enderror" placeholder="Answer" required style="flex: 1;">
+                </div>
+                @error('captcha')
+                <div class="invalid-feedback" style="display: block;">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <button type="submit" class="btn-login">
+                <i class="fas fa-sign-in-alt"></i> Sign In
+            </button>
+
+            <div class="forgot-password">
+                <a href="{{ route('password.request') }}">Forgot your password?</a>
+            </div>
+        </form>
+
+        <div class="divider">
+            <span>OR</span>
+        </div>
+
+        <div class="register-link">
+            Don't have an account? <a href="{{ route('register') }}">Create Account</a>
         </div>
     </div>
+
     <!-- Bootstrap core JavaScript-->
     <script src="{{ asset('admin_assets/vendor/jquery/jquery.min.js') }}"></script>
     <script src="{{ asset('admin_assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>

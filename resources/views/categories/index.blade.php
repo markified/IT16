@@ -6,9 +6,14 @@
         <h1 class="h3 mb-0 text-gray-800">Categories</h1>
         <p class="mb-0 text-muted">Organize PC parts by category</p>
     </div>
-    <a href="{{ route('categories.create') }}" class="btn btn-primary">
-        <i class="fas fa-plus me-1"></i> Add Category
-    </a>
+    <div class="d-flex gap-2">
+        <a href="{{ route('categories.archived') }}" class="btn btn-secondary">
+            <i class="fas fa-archive me-1"></i> View Archived
+        </a>
+        <a href="{{ route('categories.create') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i> Add Category
+        </a>
+    </div>
 </div>
 
 <div class="row">
@@ -33,7 +38,7 @@
                 </div>
                 <div class="mt-3">
                     <a href="{{ route('categories.show', $category->id) }}" class="btn btn-sm btn-info">
-                        <i class="fas fa-eye"></i>
+                        <i class="fas fa-list"></i>
                     </a>
                     <a href="{{ route('categories.edit', $category->id) }}" class="btn btn-sm btn-warning">
                         <i class="fas fa-edit"></i>
@@ -41,8 +46,8 @@
                     <form action="{{ route('categories.destroy', $category->id) }}" method="POST" class="d-inline">
                         @csrf
                         @method('DELETE')
-                        <button type="button" class="btn btn-sm btn-danger" data-confirm-delete="Delete this category? This action cannot be undone.">
-                            <i class="fas fa-trash"></i>
+                        <button type="button" class="btn btn-sm btn-secondary" data-confirm-delete="Archive this category?">
+                            <i class="fas fa-archive"></i>
                         </button>
                     </form>
                 </div>

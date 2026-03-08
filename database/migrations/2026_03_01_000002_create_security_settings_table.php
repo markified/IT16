@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+return new class() extends Migration
 {
     /**
      * Run the migrations.
@@ -79,9 +79,9 @@ return new class extends Migration
             ],
             [
                 'key' => 'lockout_duration',
-                'value' => '15',
+                'value' => '900',
                 'type' => 'integer',
-                'description' => 'Account lockout duration in minutes',
+                'description' => 'Account lockout duration in seconds',
                 'group' => 'login',
                 'created_at' => now(),
                 'updated_at' => now(),

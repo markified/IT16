@@ -1,23 +1,23 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\SupplierController;
-use App\Http\Controllers\InventoryIssueController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\StockInController;
-use App\Http\Controllers\SearchController;
-use App\Http\Controllers\ReportController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\StockAdjustmentController;
 use App\Http\Controllers\AuditLogController;
-use App\Http\Controllers\InventoryReportController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DatabaseManagementController;
-use App\Http\Controllers\SecurityController;
+use App\Http\Controllers\InventoryIssueController;
+use App\Http\Controllers\InventoryReportController;
 use App\Http\Controllers\PasswordResetController;
-
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SearchController;
+use App\Http\Controllers\SecurityController;
+use App\Http\Controllers\StockAdjustmentController;
+use App\Http\Controllers\StockInController;
+use App\Http\Controllers\StockOutOrderController;
+use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -56,6 +56,9 @@ Route::middleware('auth')->group(function () {
         Route::put('edit/{id}', 'update')->name('products.update');
         Route::delete('destroy/{id}', 'destroy')->name('products.destroy');
         Route::get('low-stock', 'lowStock')->name('products.low-stock');
+        Route::get('archived', 'archived')->name('products.archived');
+        Route::post('restore/{id}', 'restore')->name('products.restore');
+        Route::delete('permanent-delete/{id}', 'permanentDelete')->name('products.permanent-delete');
     });
 
     // Suppliers Routes - Inventory & Superadmin
@@ -67,17 +70,24 @@ Route::middleware('auth')->group(function () {
         Route::get('edit/{id}', 'edit')->name('suppliers.edit');
         Route::put('edit/{id}', 'update')->name('suppliers.update');
         Route::delete('destroy/{id}', 'destroy')->name('suppliers.destroy');
+        Route::get('archived', 'archived')->name('suppliers.archived');
+        Route::post('restore/{id}', 'restore')->name('suppliers.restore');
+        Route::delete('permanent-delete/{id}', 'permanentDelete')->name('suppliers.permanent-delete');
     });
 
-    // User Management Routes (Superadmin only)
-    Route::controller(UserController::class)->prefix('users')->middleware('superadmin')->group(function () {
+    // User Management Routes (Superadmin & Admin)
+    Route::controller(UserController::class)->prefix('users')->middleware('admin')->group(function () {
         Route::get('', 'index')->name('users.index');
         Route::get('create', 'create')->name('users.create');
         Route::post('', 'store')->name('users.store');
         Route::get('{id}', 'show')->name('users.show');
         Route::get('{id}/edit', 'edit')->name('users.edit');
         Route::put('{id}', 'update')->name('users.update');
+        Route::post('{id}/approve', 'approve')->name('users.approve');
         Route::delete('{id}', 'destroy')->name('users.destroy');
+        Route::get('archived/list', 'archived')->name('users.archived');
+        Route::post('restore/{id}', 'restore')->name('users.restore');
+        Route::delete('permanent-delete/{id}', 'permanentDelete')->name('users.permanent-delete');
     });
 
     // Stock In Routes - Inventory & Superadmin
@@ -98,9 +108,22 @@ Route::middleware('auth')->group(function () {
         Route::get('/inventory-issues', [InventoryIssueController::class, 'index'])->name('inventory-issues.index');
     });
 
+    // Stock Out Orders (Purchase Order style) - Inventory & Superadmin
+    Route::controller(StockOutOrderController::class)->prefix('stock-out-orders')->middleware('inventory')->group(function () {
+        Route::get('', 'index')->name('stock-out-orders.index');
+        Route::get('create', 'create')->name('stock-out-orders.create');
+        Route::post('', 'store')->name('stock-out-orders.store');
+        Route::get('{id}', 'show')->name('stock-out-orders.show');
+        Route::patch('{stockOutOrder}/status', 'updateStatus')->name('stock-out-orders.update-status');
+        Route::delete('{stockOutOrder}', 'destroy')->name('stock-out-orders.destroy');
+    });
+
     // Categories Routes - Inventory & Superadmin
     Route::controller(CategoryController::class)->prefix('categories')->middleware('inventory')->group(function () {
         Route::get('', 'index')->name('categories.index');
+        Route::get('archived', 'archived')->name('categories.archived');
+        Route::post('restore/{id}', 'restore')->name('categories.restore');
+        Route::delete('permanent-delete/{id}', 'permanentDelete')->name('categories.permanent-delete');
         Route::get('create', 'create')->name('categories.create');
         Route::post('', 'store')->name('categories.store');
         Route::get('{id}', 'show')->name('categories.show');
@@ -118,8 +141,8 @@ Route::middleware('auth')->group(function () {
         Route::delete('{id}', 'destroy')->name('stock-adjustments.destroy');
     });
 
-    // Audit Logs Routes - Superadmin only
-    Route::controller(AuditLogController::class)->prefix('audit-logs')->middleware('superadmin')->group(function () {
+    // Audit Logs Routes - Superadmin & Admin
+    Route::controller(AuditLogController::class)->prefix('audit-logs')->middleware('admin')->group(function () {
         Route::get('', 'index')->name('audit-logs.index');
         Route::get('{id}', 'show')->name('audit-logs.show');
     });
@@ -134,11 +157,8 @@ Route::middleware('auth')->group(function () {
         Route::get('export/{type}', [InventoryReportController::class, 'export'])->name('inventory-reports.export');
     });
 
-
-
-    // Reports Routes
-
-    Route::prefix('reports')->group(function () {
+    // Custom Reports Routes - Superadmin & Admin
+    Route::prefix('reports')->middleware('admin')->group(function () {
         Route::get('/', [ReportController::class, 'index'])->name('reports.index');
         Route::get('/create', [ReportController::class, 'create'])->name('reports.create');
         Route::post('/', [ReportController::class, 'store'])->name('reports.store');

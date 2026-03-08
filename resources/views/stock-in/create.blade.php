@@ -45,6 +45,8 @@
                                     @foreach($products as $product)
                                         <option value="{{ $product->id }}" 
                                                 data-stock="{{ $product->quantity }}"
+                                                data-cost="{{ $product->cost_price }}"
+                                                data-supplier="{{ $product->suppliers->first()?->name ?? '' }}"
                                                 {{ old('product_id') == $product->id ? 'selected' : '' }}>
                                             {{ $product->name }} ({{ $product->type }}) - Current Stock: {{ $product->quantity }}
                                         </option>
@@ -88,7 +90,7 @@
                                 <label class="form-label fw-bold">
                                     <i class="fas fa-truck me-1"></i>Supplier Name
                                 </label>
-                                <input type="text" name="supplier_name" 
+                                <input type="text" name="supplier_name" id="supplier_name"
                                        class="form-control @error('supplier_name') is-invalid @enderror" 
                                        value="{{ old('supplier_name') }}" placeholder="Enter supplier name">
                                 @error('supplier_name')
@@ -188,6 +190,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const productSelect = document.getElementById('product_id');
     const quantityInput = document.getElementById('quantity');
     const stockPreview = document.getElementById('stockPreview');
+    const unitCostInput = document.querySelector('input[name="unit_cost"]');
+    const supplierNameInput = document.getElementById('supplier_name');
 
     function updatePreview() {
         const selectedOption = productSelect.options[productSelect.selectedIndex];
@@ -197,6 +201,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const currentStock = parseInt(selectedOption.dataset.stock) || 0;
             const newStock = currentStock + quantity;
             const productName = selectedOption.text.split(' (')[0];
+            
+            // Auto-populate unit cost from product's cost_price
+            const costPrice = parseFloat(selectedOption.dataset.cost) || 0;
+            if (costPrice > 0 && !unitCostInput.value) {
+                unitCostInput.value = costPrice.toFixed(2);
+            }
 
             stockPreview.innerHTML = `
                 <h5 class="text-primary mb-3">${productName}</h5>
@@ -226,8 +236,37 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    productSelect.addEventListener('change', updatePreview);
+    productSelect.addEventListener('change', function() {
+        // Reset unit cost when product changes so it can be auto-filled
+        const selectedOption = productSelect.options[productSelect.selectedIndex];
+        if (selectedOption.value) {
+            const costPrice = parseFloat(selectedOption.dataset.cost) || 0;
+            unitCostInput.value = costPrice > 0 ? costPrice.toFixed(2) : '';
+            
+            // Auto-populate supplier name
+            const supplierName = selectedOption.dataset.supplier || '';
+            if (supplierName && !supplierNameInput.value) {
+                supplierNameInput.value = supplierName;
+            } else if (supplierName) {
+                supplierNameInput.value = supplierName;
+            }
+        } else {
+            unitCostInput.value = '';
+            supplierNameInput.value = '';
+        }
+        updatePreview();
+    });
     quantityInput.addEventListener('input', updatePreview);
+    
+    // Initialize on page load if product is already selected
+    if (productSelect.value) {
+        const selectedOption = productSelect.options[productSelect.selectedIndex];
+        const costPrice = parseFloat(selectedOption.dataset.cost) || 0;
+        if (costPrice > 0 && !unitCostInput.value) {
+            unitCostInput.value = costPrice.toFixed(2);
+        }
+        updatePreview();
+    }
 });
 </script>
 @endpush

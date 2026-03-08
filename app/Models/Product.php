@@ -26,7 +26,28 @@ class Product extends Model
         'status',
         'price_per_item',
         'cost_price',
+        'is_archived',
     ];
+
+    protected $casts = [
+        'is_archived' => 'boolean',
+    ];
+
+    /**
+     * Scope to filter out archived products.
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('is_archived', false);
+    }
+
+    /**
+     * Scope to get only archived products.
+     */
+    public function scopeArchived($query)
+    {
+        return $query->where('is_archived', true);
+    }
 
     protected static function boot()
     {
@@ -49,6 +70,7 @@ class Product extends Model
             }
         }
         $sequence = self::max('id') + 1;
+
         return $prefix . '-' . str_pad($sequence, 6, '0', STR_PAD_LEFT);
     }
 
@@ -111,21 +133,31 @@ class Product extends Model
 
     public function getProfitMarginAttribute()
     {
-        if ($this->cost_price == 0) return 0;
+        if ($this->cost_price == 0) {
+            return 0;
+        }
+
         return (($this->price_per_item - $this->cost_price) / $this->cost_price) * 100;
     }
 
     public function getStockStatusAttribute()
     {
-        if ($this->quantity == 0) return 'out_of_stock';
-        if ($this->quantity <= $this->min_stock_level) return 'low_stock';
-        if ($this->quantity <= $this->min_stock_level * 2) return 'moderate';
+        if ($this->quantity == 0) {
+            return 'out_of_stock';
+        }
+        if ($this->quantity <= $this->min_stock_level) {
+            return 'low_stock';
+        }
+        if ($this->quantity <= $this->min_stock_level * 2) {
+            return 'moderate';
+        }
+
         return 'in_stock';
     }
 
     public function getStockBadgeAttribute()
     {
-        return match($this->stock_status) {
+        return match ($this->stock_status) {
             'out_of_stock' => '<span class="badge bg-danger">Out of Stock</span>',
             'low_stock' => '<span class="badge bg-warning">Low Stock</span>',
             'moderate' => '<span class="badge bg-info">Moderate</span>',

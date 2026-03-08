@@ -25,6 +25,7 @@
     </li>
     @endif
 
+    <!-- Inventory Section - Only for Superadmin and Inventory roles -->
     @if(Auth::user()->canManageInventory())
     <hr class="sidebar-divider">
     <div class="sidebar-heading">Inventory</div>
@@ -60,10 +61,10 @@
         </a>
     </li>
 
-    <li class="nav-item {{ $isActive(['inventory-issues', 'inventory-issues.*']) ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('inventory-issues') }}">
-            <i class="fas fa-arrow-up text-danger"></i>
-            <span>Stock Out</span>
+    <li class="nav-item {{ $isActive(['stock-out-orders.*']) ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('stock-out-orders.index') }}">
+            <i class="fas fa-file-export text-danger"></i>
+            <span>Stock Out Orders</span>
         </a>
     </li>
 
@@ -103,11 +104,12 @@
     </li>
     @endif
 
-    @if(Auth::user()->isAdmin() || Auth::user()->canManageSecurity())
+    <!-- Administration Section - For Superadmin, Admin, and Security roles -->
+    @if(Auth::user()->canAccessAdminFeatures() || Auth::user()->canManageSecurity())
     <hr class="sidebar-divider">
     <div class="sidebar-heading">Administration</div>
 
-    @if(Auth::user()->isAdmin())
+    @if(Auth::user()->canAccessAdminFeatures())
     <li class="nav-item {{ $isActive('users.*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('users.index') }}">
             <i class="fas fa-user-cog"></i>
@@ -116,7 +118,7 @@
     </li>
     @endif
 
-    @if(Auth::user()->isAdmin())
+    @if(Auth::user()->canAccessAdminFeatures())
     <li class="nav-item {{ $isActive('audit-logs.*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('audit-logs.index') }}">
             <i class="fas fa-history"></i>
@@ -125,7 +127,7 @@
     </li>
     @endif
     
-    @if(Auth::user()->isAdmin())
+    @if(Auth::user()->canAccessAdminFeatures())
     <li class="nav-item {{ $isActive('reports.*') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('reports.index') }}">
             <i class="fas fa-file-alt"></i>
@@ -254,3 +256,33 @@ body.dark-mode .sidebar .collapse-header {
     letter-spacing: 0.05rem;
 }
 </style>
+
+<script>
+// Preserve sidebar scroll position across page loads
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebar = document.getElementById('accordionSidebar');
+    if (!sidebar) return;
+
+    // Restore scroll position
+    const savedScrollTop = localStorage.getItem('sidebarScrollPos');
+    if (savedScrollTop) {
+        sidebar.scrollTop = parseInt(savedScrollTop);
+    }
+
+    // Save scroll position before navigating away
+    window.addEventListener('beforeunload', function() {
+        localStorage.setItem('sidebarScrollPos', sidebar.scrollTop);
+    });
+
+    // Also save on sidebar scroll (for catching quick navigations)
+    sidebar.addEventListener('scroll', function() {
+        localStorage.setItem('sidebarScrollPos', sidebar.scrollTop);
+    });
+
+    // Scroll active sidebar item into view if not visible
+    const activeItem = sidebar.querySelector('.nav-item.active');
+    if (activeItem && !savedScrollTop) {
+        activeItem.scrollIntoView({ block: 'center', behavior: 'instant' });
+    }
+});
+</script>

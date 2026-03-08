@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AuditLog;
 use App\Models\LoginHistory;
 use App\Models\SecuritySetting;
 use App\Models\User;
-use App\Models\AuditLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 
 class SecurityController extends Controller
 {
@@ -19,7 +18,7 @@ class SecurityController extends Controller
     public function index()
     {
         // Allow superadmin and security roles (middleware already protects this route)
-        if (!Auth::user()->isAdmin() && !Auth::user()->isSecurity()) {
+        if (! Auth::user()->isAdmin() && ! Auth::user()->isSecurity()) {
             abort(403, 'Unauthorized access.');
         }
 
@@ -50,8 +49,8 @@ class SecurityController extends Controller
 
         // Get recent security-related audit logs
         $securityLogs = AuditLog::whereIn('action', [
-            'login', 'logout', 'failed_login', 'password_changed', 
-            'user_locked', 'user_unlocked', 'settings_updated'
+            'login', 'logout', 'failed_login', 'password_changed',
+            'user_locked', 'user_unlocked', 'settings_updated',
         ])->orderBy('created_at', 'desc')->take(10)->get();
 
         return view('security.index', compact(
@@ -69,7 +68,7 @@ class SecurityController extends Controller
     public function loginHistory(Request $request)
     {
         // Allow superadmin and security roles (middleware already protects this route)
-        if (!Auth::user()->isAdmin() && !Auth::user()->isSecurity()) {
+        if (! Auth::user()->isAdmin() && ! Auth::user()->isSecurity()) {
             abort(403, 'Unauthorized access.');
         }
 
@@ -97,7 +96,7 @@ class SecurityController extends Controller
         }
 
         $loginHistories = $query->orderBy('login_at', 'desc')->paginate(20);
-        
+
         $users = User::orderBy('name')->get();
         $statuses = ['success', 'failed', 'blocked'];
 
@@ -110,7 +109,7 @@ class SecurityController extends Controller
     public function settings()
     {
         // Allow superadmin and security roles (middleware already protects this route)
-        if (!Auth::user()->isAdmin() && !Auth::user()->isSecurity()) {
+        if (! Auth::user()->isAdmin() && ! Auth::user()->isSecurity()) {
             abort(403, 'Unauthorized access.');
         }
 
@@ -125,7 +124,7 @@ class SecurityController extends Controller
     public function updateSettings(Request $request)
     {
         // Allow superadmin and security roles (middleware already protects this route)
-        if (!Auth::user()->isAdmin() && !Auth::user()->isSecurity()) {
+        if (! Auth::user()->isAdmin() && ! Auth::user()->isSecurity()) {
             abort(403, 'Unauthorized access.');
         }
 
@@ -136,7 +135,7 @@ class SecurityController extends Controller
             'password_require_numbers' => 'boolean',
             'password_require_symbols' => 'boolean',
             'max_login_attempts' => 'required|integer|min:3|max:10',
-            'lockout_duration' => 'required|integer|min:5|max:60',
+            'lockout_duration' => 'required|integer|min:30|max:3600',
             'session_timeout' => 'required|integer|min:15|max:480',
             'single_session' => 'boolean',
             'audit_log_retention_days' => 'required|integer|min:30|max:365',
@@ -155,26 +154,30 @@ class SecurityController extends Controller
             'audit_log_retention_days' => $request->audit_log_retention_days,
         ];
 
-        foreach ($settingsToUpdate as $key => $value) {
-            SecuritySetting::where('key', $key)->update(['value' => $value]);
+        try {
+            foreach ($settingsToUpdate as $key => $value) {
+                SecuritySetting::where('key', $key)->update(['value' => $value]);
+            }
+
+            // Clear settings cache
+            SecuritySetting::clearCache();
+
+            // Log the action
+            AuditLog::create([
+                'user_id' => Auth::id(),
+                'action' => 'settings_updated',
+                'model_type' => 'SecuritySetting',
+                'model_id' => 0,
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+                'description' => 'Security settings updated',
+            ]);
+
+            return redirect()->route('security.settings')
+                ->with('success', 'Security settings updated successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to update security settings. Please try again.');
         }
-
-        // Clear settings cache
-        SecuritySetting::clearCache();
-
-        // Log the action
-        AuditLog::create([
-            'user_id' => Auth::id(),
-            'action' => 'settings_updated',
-            'model_type' => 'SecuritySetting',
-            'model_id' => 0,
-            'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent(),
-            'description' => 'Security settings updated',
-        ]);
-
-        return redirect()->route('security.settings')
-            ->with('success', 'Security settings updated successfully.');
     }
 
     /**
@@ -183,7 +186,7 @@ class SecurityController extends Controller
     public function activeSessions()
     {
         // Allow superadmin and security roles (middleware already protects this route)
-        if (!Auth::user()->isAdmin() && !Auth::user()->isSecurity()) {
+        if (! Auth::user()->isAdmin() && ! Auth::user()->isSecurity()) {
             abort(403, 'Unauthorized access.');
         }
 
@@ -206,6 +209,7 @@ class SecurityController extends Controller
                 $session->last_activity = \Carbon\Carbon::createFromTimestamp($session->last_activity);
                 $session->browser = $this->getBrowser($session->user_agent);
                 $session->platform = $this->getPlatform($session->user_agent);
+
                 return $session;
             });
 
@@ -218,25 +222,30 @@ class SecurityController extends Controller
     public function terminateSession(Request $request, $sessionId)
     {
         // Allow superadmin and security roles (middleware already protects this route)
-        if (!Auth::user()->isAdmin() && !Auth::user()->isSecurity()) {
+        if (! Auth::user()->isAdmin() && ! Auth::user()->isSecurity()) {
             abort(403, 'Unauthorized access.');
         }
 
-        DB::table('sessions')->where('id', $sessionId)->delete();
+        try {
+            DB::table('sessions')->where('id', $sessionId)->delete();
 
-        // Log the action
-        AuditLog::create([
-            'user_id' => Auth::id(),
-            'action' => 'session_terminated',
-            'model_type' => 'Session',
-            'model_id' => 0,
-            'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent(),
-            'description' => 'User session terminated: ' . $sessionId,
-        ]);
+            // Log the action
+            AuditLog::create([
+                'user_id' => Auth::id(),
+                'action' => 'session_terminated',
+                'model_type' => 'Session',
+                'model_id' => 0,
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+                'description' => 'User session terminated: ' . $sessionId,
+            ]);
 
-        return redirect()->route('security.active-sessions')
-            ->with('success', 'Session terminated successfully.');
+            return redirect()->route('security.active-sessions')
+                ->with('success', 'Session terminated successfully.');
+        } catch (\Exception $e) {
+            return redirect()->route('security.active-sessions')
+                ->with('error', 'Failed to terminate session. Please try again.');
+        }
     }
 
     /**
@@ -245,26 +254,32 @@ class SecurityController extends Controller
     public function unlockUser(Request $request, $userId)
     {
         // Allow superadmin and security roles (middleware already protects this route)
-        if (!Auth::user()->isAdmin() && !Auth::user()->isSecurity()) {
+        if (! Auth::user()->isAdmin() && ! Auth::user()->isSecurity()) {
             abort(403, 'Unauthorized access.');
         }
 
-        $user = User::findOrFail($userId);
-        $user->resetFailedAttempts();
+        try {
+            $user = User::findOrFail($userId);
+            $user->resetFailedAttempts();
 
-        // Log the action
-        AuditLog::create([
-            'user_id' => Auth::id(),
-            'action' => 'user_unlocked',
-            'model_type' => 'User',
-            'model_id' => $user->id,
-            'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent(),
-            'description' => "User account unlocked: {$user->email}",
-        ]);
+            // Log the action
+            AuditLog::create([
+                'user_id' => Auth::id(),
+                'action' => 'user_unlocked',
+                'model_type' => 'User',
+                'model_id' => $user->id,
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+                'description' => "User account unlocked: {$user->email}",
+            ]);
 
-        return redirect()->back()
-            ->with('success', "User {$user->name}'s account has been unlocked.");
+            return redirect()->back()
+                ->with('success', "User {$user->name}'s account has been unlocked.");
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return redirect()->back()->with('error', 'User not found.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to unlock user account. Please try again.');
+        }
     }
 
     /**
@@ -273,35 +288,41 @@ class SecurityController extends Controller
     public function toggleUserStatus(Request $request, $userId)
     {
         // Allow superadmin and security roles (middleware already protects this route)
-        if (!Auth::user()->isAdmin() && !Auth::user()->isSecurity()) {
+        if (! Auth::user()->isAdmin() && ! Auth::user()->isSecurity()) {
             abort(403, 'Unauthorized access.');
         }
 
-        $user = User::findOrFail($userId);
+        try {
+            $user = User::findOrFail($userId);
 
-        // Prevent deactivating own account
-        if ($user->id === Auth::id()) {
+            // Prevent deactivating own account
+            if ($user->id === Auth::id()) {
+                return redirect()->back()
+                    ->with('error', 'You cannot deactivate your own account.');
+            }
+
+            $user->update(['is_active' => ! $user->is_active]);
+
+            $status = $user->is_active ? 'activated' : 'deactivated';
+
+            // Log the action
+            AuditLog::create([
+                'user_id' => Auth::id(),
+                'action' => "user_{$status}",
+                'model_type' => 'User',
+                'model_id' => $user->id,
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+                'description' => "User account {$status}: {$user->email}",
+            ]);
+
             return redirect()->back()
-                ->with('error', 'You cannot deactivate your own account.');
+                ->with('success', "User {$user->name}'s account has been {$status}.");
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return redirect()->back()->with('error', 'User not found.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to update user status. Please try again.');
         }
-
-        $user->update(['is_active' => !$user->is_active]);
-
-        $status = $user->is_active ? 'activated' : 'deactivated';
-
-        // Log the action
-        AuditLog::create([
-            'user_id' => Auth::id(),
-            'action' => "user_{$status}",
-            'model_type' => 'User',
-            'model_id' => $user->id,
-            'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent(),
-            'description' => "User account {$status}: {$user->email}",
-        ]);
-
-        return redirect()->back()
-            ->with('success', "User {$user->name}'s account has been {$status}.");
     }
 
     /**
@@ -310,26 +331,32 @@ class SecurityController extends Controller
     public function forcePasswordChange(Request $request, $userId)
     {
         // Allow superadmin and security roles (middleware already protects this route)
-        if (!Auth::user()->isAdmin() && !Auth::user()->isSecurity()) {
+        if (! Auth::user()->isAdmin() && ! Auth::user()->isSecurity()) {
             abort(403, 'Unauthorized access.');
         }
 
-        $user = User::findOrFail($userId);
-        $user->update(['force_password_change' => true]);
+        try {
+            $user = User::findOrFail($userId);
+            $user->update(['force_password_change' => true]);
 
-        // Log the action
-        AuditLog::create([
-            'user_id' => Auth::id(),
-            'action' => 'force_password_change',
-            'model_type' => 'User',
-            'model_id' => $user->id,
-            'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent(),
-            'description' => "Forced password change for user: {$user->email}",
-        ]);
+            // Log the action
+            AuditLog::create([
+                'user_id' => Auth::id(),
+                'action' => 'force_password_change',
+                'model_type' => 'User',
+                'model_id' => $user->id,
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+                'description' => "Forced password change for user: {$user->email}",
+            ]);
 
-        return redirect()->back()
-            ->with('success', "User {$user->name} will be required to change password on next login.");
+            return redirect()->back()
+                ->with('success', "User {$user->name} will be required to change password on next login.");
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return redirect()->back()->with('error', 'User not found.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to force password change. Please try again.');
+        }
     }
 
     /**
@@ -338,7 +365,7 @@ class SecurityController extends Controller
     public function exportLogs(Request $request)
     {
         // Allow superadmin and security roles (middleware already protects this route)
-        if (!Auth::user()->isAdmin() && !Auth::user()->isSecurity()) {
+        if (! Auth::user()->isAdmin() && ! Auth::user()->isSecurity()) {
             abort(403, 'Unauthorized access.');
         }
 
@@ -390,17 +417,17 @@ class SecurityController extends Controller
                 'Content-Disposition' => "attachment; filename=\"{$filename}.csv\"",
             ];
 
-            $callback = function() use ($data) {
+            $callback = function () use ($data) {
                 $file = fopen('php://output', 'w');
-                
+
                 if ($data->count() > 0) {
                     fputcsv($file, array_keys($data->first()));
                 }
-                
+
                 foreach ($data as $row) {
                     fputcsv($file, $row);
                 }
-                
+
                 fclose($file);
             };
 
@@ -416,11 +443,22 @@ class SecurityController extends Controller
      */
     protected function getBrowser($userAgent)
     {
-        if (strpos($userAgent, 'Edg') !== false) return 'Edge';
-        if (strpos($userAgent, 'Chrome') !== false) return 'Chrome';
-        if (strpos($userAgent, 'Firefox') !== false) return 'Firefox';
-        if (strpos($userAgent, 'Safari') !== false) return 'Safari';
-        if (strpos($userAgent, 'Opera') !== false || strpos($userAgent, 'OPR') !== false) return 'Opera';
+        if (strpos($userAgent, 'Edg') !== false) {
+            return 'Edge';
+        }
+        if (strpos($userAgent, 'Chrome') !== false) {
+            return 'Chrome';
+        }
+        if (strpos($userAgent, 'Firefox') !== false) {
+            return 'Firefox';
+        }
+        if (strpos($userAgent, 'Safari') !== false) {
+            return 'Safari';
+        }
+        if (strpos($userAgent, 'Opera') !== false || strpos($userAgent, 'OPR') !== false) {
+            return 'Opera';
+        }
+
         return 'Unknown';
     }
 
@@ -429,11 +467,22 @@ class SecurityController extends Controller
      */
     protected function getPlatform($userAgent)
     {
-        if (strpos($userAgent, 'Windows') !== false) return 'Windows';
-        if (strpos($userAgent, 'Mac') !== false) return 'Mac OS';
-        if (strpos($userAgent, 'Linux') !== false) return 'Linux';
-        if (strpos($userAgent, 'Android') !== false) return 'Android';
-        if (strpos($userAgent, 'iPhone') !== false || strpos($userAgent, 'iPad') !== false) return 'iOS';
+        if (strpos($userAgent, 'Windows') !== false) {
+            return 'Windows';
+        }
+        if (strpos($userAgent, 'Mac') !== false) {
+            return 'Mac OS';
+        }
+        if (strpos($userAgent, 'Linux') !== false) {
+            return 'Linux';
+        }
+        if (strpos($userAgent, 'Android') !== false) {
+            return 'Android';
+        }
+        if (strpos($userAgent, 'iPhone') !== false || strpos($userAgent, 'iPad') !== false) {
+            return 'iOS';
+        }
+
         return 'Unknown';
     }
 }

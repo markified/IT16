@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\Supplier;
-use App\Models\Category;
+use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
@@ -14,16 +14,16 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Product::with(['supplier', 'category'])->orderBy('created_at', 'DESC');
+        $query = Product::with(['supplier', 'category'])->active()->orderBy('created_at', 'DESC');
 
         // Search filter
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('sku', 'like', "%{$search}%")
-                  ->orWhere('barcode', 'like', "%{$search}%")
-                  ->orWhere('brand', 'like', "%{$search}%");
+                    ->orWhere('sku', 'like', "%{$search}%")
+                    ->orWhere('barcode', 'like', "%{$search}%")
+                    ->orWhere('brand', 'like', "%{$search}%");
             });
         }
 
@@ -56,6 +56,7 @@ class ProductController extends Controller
     {
         $suppliers = Supplier::all();
         $categories = Category::where('is_active', true)->orderBy('name')->get();
+
         return view('products.create', compact('suppliers', 'categories'));
     }
 
@@ -114,6 +115,7 @@ class ProductController extends Controller
     public function show(string $id)
     {
         $product = Product::with(['supplier', 'category', 'suppliers', 'stockIns', 'stockAdjustments', 'inventoryIssues'])->findOrFail($id);
+
         return view('products.show', compact('product'));
     }
 
@@ -125,6 +127,7 @@ class ProductController extends Controller
         $product = Product::with('suppliers')->findOrFail($id);
         $suppliers = Supplier::all();
         $categories = Category::where('is_active', true)->orderBy('name')->get();
+
         return view('products.edit', compact('product', 'suppliers', 'categories'));
     }
 
@@ -180,16 +183,17 @@ class ProductController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Archive the specified resource.
      */
     public function destroy(string $id)
     {
         try {
             $product = Product::findOrFail($id);
-            $product->delete();
-            return redirect()->route('products')->with('success', 'PC part deleted successfully');
+            $product->update(['is_archived' => true]);
+
+            return redirect()->route('products')->with('success', 'PC part archived successfully');
         } catch (\Exception $e) {
-            return redirect()->route('products')->with('error', 'Failed to delete product. It may have associated records.');
+            return redirect()->route('products')->with('error', 'Failed to archive product. Please try again.');
         }
     }
 
@@ -199,6 +203,54 @@ class ProductController extends Controller
     public function lowStock()
     {
         $products = Product::whereRaw('quantity <= min_stock_level')->get();
+
         return view('products.low_stock', compact('products'));
+    }
+
+    /**
+     * Display archived products.
+     */
+    public function archived()
+    {
+        $products = Product::with(['supplier', 'category'])->archived()->orderBy('updated_at', 'DESC')->get();
+
+        return view('products.archived', compact('products'));
+    }
+
+    /**
+     * Restore an archived product.
+     */
+    public function restore(string $id)
+    {
+        try {
+            $product = Product::findOrFail($id);
+            $product->update(['is_archived' => false]);
+
+            return redirect()->back()->with('success', 'PC part restored successfully');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to restore product. Please try again.');
+        }
+    }
+
+    /**
+     * Permanently delete an archived product.
+     */
+    public function permanentDelete(string $id)
+    {
+        try {
+            $product = Product::findOrFail($id);
+
+            // Only allow permanent deletion of archived products
+            if (! $product->is_archived) {
+                return redirect()->back()->with('error', 'Only archived products can be permanently deleted.');
+            }
+
+            $productName = $product->name;
+            $product->delete();
+
+            return redirect()->back()->with('success', "Product '{$productName}' has been permanently deleted.");
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to delete product permanently. Please try again.');
+        }
     }
 }

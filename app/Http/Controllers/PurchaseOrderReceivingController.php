@@ -15,12 +15,12 @@ class PurchaseOrderReceivingController extends Controller
     public function index()
     {
         $receivings = PurchaseOrderReceiving::with([
-                'orderDetail.product', 
-                'orderDetail.purchaseOrder.supplier'
-            ])
+            'orderDetail.product',
+            'orderDetail.purchaseOrder.supplier',
+        ])
             ->latest()
             ->paginate(10);
-            
+
         return view('receivings.index', compact('receivings'));
     }
 
@@ -30,7 +30,7 @@ class PurchaseOrderReceivingController extends Controller
     public function create(OrderDetail $orderDetail)
     {
         $purchaseOrder = $orderDetail->purchaseOrder;
-        
+
         if ($purchaseOrder->status !== 'approved') {
             return redirect()->route('purchase-orders.show', $purchaseOrder)
                 ->withErrors(['error' => 'Only approved purchase orders can receive items.']);
@@ -51,7 +51,7 @@ class PurchaseOrderReceivingController extends Controller
         ]);
 
         $purchaseOrder = $orderDetail->purchaseOrder;
-        
+
         if ($purchaseOrder->status !== 'approved') {
             return redirect()->route('purchase-orders.show', $purchaseOrder)
                 ->withErrors(['error' => 'Only approved purchase orders can receive items.']);
@@ -75,7 +75,7 @@ class PurchaseOrderReceivingController extends Controller
 
             // Check if fully received
             $totalReceived = $orderDetail->receivings()->sum('quantity_received');
-            
+
             // Check if all items in this purchase order are fully received
             $allReceived = true;
             foreach ($purchaseOrder->orderDetails as $detail) {
@@ -95,10 +95,11 @@ class PurchaseOrderReceivingController extends Controller
 
             return redirect()->route('purchase-orders.show', $purchaseOrder)
                 ->with('success', 'Items received successfully.');
-                
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withErrors(['error' => 'Failed to process receiving. ' . $e->getMessage()]);
+            \Illuminate\Support\Facades\Log::error('Receiving error: ' . $e->getMessage());
+
+            return back()->with('error', 'Failed to process receiving. Please try again.');
         }
     }
 
@@ -108,6 +109,7 @@ class PurchaseOrderReceivingController extends Controller
     public function show(PurchaseOrderReceiving $receiving)
     {
         $receiving->load(['orderDetail.part', 'orderDetail.purchaseOrder.supplier']);
+
         return view('receivings.show', compact('receiving'));
     }
 
@@ -123,15 +125,15 @@ class PurchaseOrderReceivingController extends Controller
 
             $orderDetail = $receiving->orderDetail;
             $purchaseOrder = $orderDetail->purchaseOrder;
-            
+
             // Revert inventory quantity
             $part = $orderDetail->part;
             $part->quantity -= $receiving->quantity_received;
             $part->save();
-            
+
             // Delete the receiving
             $receiving->delete();
-            
+
             // Update purchase order status if needed
             if ($purchaseOrder->status === 'received') {
                 $purchaseOrder->update(['status' => 'approved']);
@@ -141,10 +143,11 @@ class PurchaseOrderReceivingController extends Controller
 
             return redirect()->route('purchase-orders.show', $purchaseOrder)
                 ->with('success', 'Receiving record deleted successfully and inventory adjusted.');
-                
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withErrors(['error' => 'Failed to delete receiving. ' . $e->getMessage()]);
+            \Illuminate\Support\Facades\Log::error('Receiving deletion error: ' . $e->getMessage());
+
+            return back()->with('error', 'Failed to delete receiving. Please try again.');
         }
     }
 
@@ -158,22 +161,22 @@ class PurchaseOrderReceivingController extends Controller
 
         if ($request->filled('search')) {
             $search = $request->input('search');
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('id', $search)
-                  ->orWhereHas('supplier', function($q2) use ($search) {
-                      $q2->where('name', 'like', "%$search%");
-                  })
-                  ->orWhereHas('orderDetails.product', function($q2) use ($search) {
-                      $q2->where('description', 'like', "%$search%")
-                         ->orWhere('type', 'like', "%$search%")
-                         ->orWhere('name', 'like', "%$search%")
-                         ->orWhere('serial_number', 'like', "%$search%")
-                         ;
-                  });
+                    ->orWhereHas('supplier', function ($q2) use ($search) {
+                        $q2->where('name', 'like', "%$search%");
+                    })
+                    ->orWhereHas('orderDetails.product', function ($q2) use ($search) {
+                        $q2->where('description', 'like', "%$search%")
+                            ->orWhere('type', 'like', "%$search%")
+                            ->orWhere('name', 'like', "%$search%")
+                            ->orWhere('serial_number', 'like', "%$search%");
+                    });
             });
         }
 
         $purchaseOrders = $query->latest()->paginate(10);
+
         return view('receivings.stock-in', compact('purchaseOrders'));
     }
 }

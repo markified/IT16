@@ -1,8 +1,9 @@
 <?php
+
 namespace App\Http\Controllers;
 
-use App\Models\Product;
 use App\Models\InventoryIssue;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -65,6 +66,7 @@ class InventoryIssueController extends Controller
                 ->with('success', 'PC part issued successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
+
             return redirect()->back()
                 ->withInput()
                 ->withErrors(['error' => 'Failed to issue PC part: ' . $e->getMessage()]);
@@ -74,6 +76,7 @@ class InventoryIssueController extends Controller
     public function show($id)
     {
         $inventoryIssue = InventoryIssue::with(['product'])->findOrFail($id);
+
         return view('inventory-issues.show', compact('inventoryIssue'));
     }
 }

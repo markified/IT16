@@ -10,7 +10,8 @@ use Illuminate\Notifications\Notifiable;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory;
+    use Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -29,6 +30,9 @@ class User extends Authenticatable
         'password_changed_at',
         'force_password_change',
         'is_active',
+        'is_approved',
+        'approved_at',
+        'approved_by',
     ];
 
     /**
@@ -82,13 +86,13 @@ class User extends Authenticatable
     public function incrementFailedAttempts()
     {
         $this->increment('failed_login_attempts');
-        
+
         $maxAttempts = SecuritySetting::get('max_login_attempts', 5);
-        $lockoutDuration = SecuritySetting::get('lockout_duration', 15);
-        
+        $lockoutDuration = SecuritySetting::get('lockout_duration', 900); // Default 15 minutes = 900 seconds
+
         if ($this->failed_login_attempts >= $maxAttempts) {
             $this->update([
-                'locked_until' => now()->addMinutes($lockoutDuration),
+                'locked_until' => now()->addSeconds($lockoutDuration),
             ]);
         }
     }
@@ -126,6 +130,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Check if user is regular admin (limited access).
+     */
+    public function isRegularAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
      * Check if user is inventory manager.
      */
     public function isInventory()
@@ -160,14 +172,13 @@ class User extends Authenticatable
         if (is_string($roles)) {
             return $this->role === $roles;
         }
-        
+
         return in_array($this->role, $roles);
     }
 
     /**
      * Check if user has any of the specified roles.
      *
-     * @param  array  $roles
      * @return bool
      */
     public function hasAnyRole(array $roles)
@@ -196,16 +207,27 @@ class User extends Authenticatable
     }
 
     /**
+     * Check if user can access admin features (users, audit logs, reports).
+     *
+     * @return bool
+     */
+    public function canAccessAdminFeatures()
+    {
+        return in_array($this->role, ['superadmin', 'admin']);
+    }
+
+    /**
      * Get status badge HTML.
      */
     public function getStatusBadgeAttribute()
     {
-        if (!$this->is_active) {
+        if (! $this->is_active) {
             return '<span class="badge bg-secondary">Inactive</span>';
         }
         if ($this->isLocked()) {
             return '<span class="badge bg-warning">Locked</span>';
         }
+
         return '<span class="badge bg-success">Active</span>';
     }
 }

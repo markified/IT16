@@ -34,6 +34,7 @@
             background: url("{{ asset('image/bg6.png') }}") no-repeat center center;
             background-size: cover;
             position: relative;
+            padding: 20px;
         }
 
         body::before {
@@ -47,12 +48,57 @@
             z-index: 0;
         }
 
-        .floating-container {
+        .auth-wrapper {
             position: relative;
             z-index: 1;
             width: 100%;
-            max-width: 480px;
-            margin: 20px;
+            max-width: 1000px;
+            display: flex;
+            gap: 30px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .logo-container {
+            flex: 1;
+            min-width: 280px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo-container img {
+            max-width: 100%;
+            height: auto;
+            width: 250px;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.3));
+        }
+
+        .logo-container h2 {
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .logo-container p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .floating-container {
+            position: relative;
+            flex: 1;
+            min-width: 320px;
             padding: 40px;
             background: linear-gradient(135deg, #001d6d 0%, #002a8f 50%, #0039b3 100%);
             border-radius: 24px;
@@ -239,9 +285,27 @@
         }
 
         /* Responsive */
-        @media (max-width: 576px) {
+        @media (max-width: 768px) {
+            .auth-wrapper {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .logo-container {
+                min-width: 100%;
+                padding: 30px 20px;
+            }
+
+            .logo-container img {
+                width: 200px;
+            }
+
+            .logo-container h2 {
+                font-size: 20px;
+            }
+
             .floating-container {
-                margin: 15px;
+                min-width: 100%;
                 padding: 30px 25px;
             }
 
@@ -258,11 +322,38 @@
                 text-align: center;
             }
         }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .logo-container {
+                padding: 20px 15px;
+            }
+
+            .logo-container img {
+                width: 150px;
+            }
+
+            .floating-container {
+                padding: 25px 20px;
+            }
+        }
     </style>
 </head>
 
 <body>
-    <div class="floating-container">
+    <div class="auth-wrapper">
+        <!-- Logo Section -->
+        <div class="logo-container">
+            <img src="{{ asset('image/logo.png') }}" alt="Logo">
+            <h2>Inventory Management System</h2>
+            <p>Secure and efficient inventory tracking</p>
+        </div>
+
+        <!-- Form Section -->
+        <div class="floating-container">
         <div class="form-header">
             <h1><i class="fas fa-sign-in-alt mr-2"></i> Welcome Back!</h1>
             <p>Sign in to continue to your account</p>
@@ -306,11 +397,12 @@
                 @enderror
             </div>
 
+            @if($show_captcha ?? false)
             <div class="form-group">
                 <label for="captcha">Security Check <span class="text-danger">*</span></label>
                 <div class="captcha-wrapper">
                     <div class="captcha-question">
-                        <i class="fas fa-shield-alt mr-2"></i>{{ $captcha_question ?? '0 + 0 = ?' }}
+                        <i class="fas fa-shield-alt mr-2"></i>{{ $captcha_question }}
                     </div>
                     <input name="captcha" id="captcha" type="number" class="form-control @error('captcha') is-invalid @enderror" placeholder="Answer" required style="flex: 1;">
                 </div>
@@ -318,6 +410,7 @@
                 <div class="invalid-feedback" style="display: block;">{{ $message }}</div>
                 @enderror
             </div>
+            @endif
 
             <button type="submit" class="btn-login">
                 <i class="fas fa-sign-in-alt"></i> Sign In
@@ -335,6 +428,7 @@
         <div class="register-link">
             Don't have an account? <a href="{{ route('register') }}">Create Account</a>
         </div>
+    </div>
     </div>
 
     <!-- Bootstrap core JavaScript-->

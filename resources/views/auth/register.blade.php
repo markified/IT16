@@ -34,7 +34,7 @@
             background: url("{{ asset('image/bg6.png') }}") no-repeat center center fixed;
             background-size: cover;
             position: relative;
-            padding: 20px 0;
+            padding: 20px;
         }
 
         body::before {
@@ -48,57 +48,105 @@
             z-index: 0;
         }
 
-        .floating-container {
+        .auth-wrapper {
             position: relative;
             z-index: 1;
             width: 100%;
-            max-width: 480px;
-            margin: 20px;
-            padding: 35px;
+            max-width: 1100px;
+            display: flex;
+            gap: 30px;
+            align-items: stretch;
+        }
+
+        .logo-container {
+            flex: 1 1 45%;
+            min-width: 280px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo-container img {
+            max-width: 100%;
+            height: auto;
+            width: 280px;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.3));
+        }
+
+        .logo-container h2 {
+            color: #ffffff;
+            font-size: 26px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 10px;
+            line-height: 1.3;
+        }
+
+        .logo-container p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 15px;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .floating-container {
+            position: relative;
+            flex: 1 1 55%;
+            min-width: 320px;
+            padding: 40px;
             background: linear-gradient(135deg, #001d6d 0%, #002a8f 50%, #0039b3 100%);
             border-radius: 24px;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
+            overflow-y: auto;
+            max-height: 90vh;
         }
 
         .form-header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         .form-header h1 {
             color: #ffffff;
-            font-size: 26px;
+            font-size: 28px;
             font-weight: 700;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
 
         .form-header p {
             color: rgba(255, 255, 255, 0.7);
-            font-size: 14px;
+            font-size: 15px;
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 18px;
         }
 
         .form-group label {
             display: block;
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 13px;
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 14px;
             font-weight: 600;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
 
         .form-control {
             width: 100%;
-            padding: 5px 12px;
+            padding: 12px 16px;
             border: 2px solid rgba(255, 255, 255, 0.2);
             border-radius: 12px;
             background: rgba(255, 255, 255, 0.95);
             color: #333333;
             font-size: 15px;
             transition: all 0.3s ease;
-            
+            min-height: 46px;
         }
 
         .form-control:focus {
@@ -221,21 +269,145 @@
         }
 
         /* Responsive */
-        @media (max-width: 576px) {
+        @media (max-width: 992px) {
+            .auth-wrapper {
+                flex-direction: column;
+                gap: 25px;
+                max-width: 600px;
+            }
+
+            .logo-container {
+                flex: 1 1 auto;
+                min-width: 100%;
+                padding: 35px 30px;
+            }
+
+            .logo-container img {
+                width: 220px;
+            }
+
+            .logo-container h2 {
+                font-size: 24px;
+            }
+
+            .logo-container p {
+                font-size: 14px;
+            }
+
             .floating-container {
-                margin: 15px;
+                flex: 1 1 auto;
+                min-width: 100%;
+                padding: 35px 30px;
+                max-height: none;
+            }
+
+            .form-header h1 {
+                font-size: 26px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .auth-wrapper {
+                gap: 20px;
+            }
+
+            .logo-container {
+                padding: 30px 25px;
+            }
+
+            .logo-container img {
+                width: 200px;
+            }
+
+            .logo-container h2 {
+                font-size: 22px;
+            }
+
+            .floating-container {
                 padding: 30px 25px;
             }
 
             .form-header h1 {
                 font-size: 24px;
             }
+
+            .form-control {
+                padding: 10px 14px;
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .auth-wrapper {
+                gap: 15px;
+            }
+
+            .logo-container {
+                padding: 25px 20px;
+            }
+
+            .logo-container img {
+                width: 160px;
+            }
+
+            .logo-container h2 {
+                font-size: 20px;
+            }
+
+            .logo-container p {
+                font-size: 13px;
+            }
+
+            .floating-container {
+                padding: 25px 20px;
+            }
+
+            .form-header h1 {
+                font-size: 22px;
+            }
+
+            .form-group {
+                margin-bottom: 15px;
+            }
+
+            .form-group label {
+                font-size: 13px;
+                margin-bottom: 6px;
+            }
+
+            .form-control {
+                padding: 10px 12px;
+                font-size: 14px;
+                min-height: 42px;
+            }
+
+            .btn-register {
+                padding: 11px;
+                font-size: 15px;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="floating-container">
+    <div class="auth-wrapper">
+        <!-- Logo Section -->
+        <div class="logo-container">
+            <img src="{{ asset('image/logo.png') }}" alt="Logo">
+            <h2>Inventory Management System</h2>
+            <p>Secure and efficient inventory tracking</p>
+        </div>
+
+        <!-- Form Section -->
+        <div class="floating-container">
         <div class="form-header">
             <h1><i class="fas fa-user-plus mr-2"></i> Create Account</h1>
             <p>Fill in your details to get started</p>
@@ -295,6 +467,9 @@
                 @error('role')
                 <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
+                <div id="approvalNote" class="mt-2" style="background: rgba(255,193,7,0.2); border: 1px solid rgba(255,193,7,0.5); border-radius: 8px; padding: 10px;">
+                    <small style="color: #ffc107;"><i class="fas fa-exclamation-triangle me-1"></i> All accounts require approval from an administrator before you can log in.</small>
+                </div>
             </div>
 
             <button type="submit" class="btn-register">
@@ -309,6 +484,7 @@
         <div class="login-link">
             Already have an account? <a href="{{ route('login') }}">Sign In</a>
         </div>
+    </div>
     </div>
 
     <!-- Bootstrap core JavaScript-->

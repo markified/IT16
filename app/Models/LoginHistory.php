@@ -119,12 +119,25 @@ class LoginHistory extends Model
      */
     protected static function getBrowser($userAgent)
     {
-        if (strpos($userAgent, 'Edg') !== false) return 'Edge';
-        if (strpos($userAgent, 'Chrome') !== false) return 'Chrome';
-        if (strpos($userAgent, 'Firefox') !== false) return 'Firefox';
-        if (strpos($userAgent, 'Safari') !== false) return 'Safari';
-        if (strpos($userAgent, 'Opera') !== false || strpos($userAgent, 'OPR') !== false) return 'Opera';
-        if (strpos($userAgent, 'MSIE') !== false || strpos($userAgent, 'Trident') !== false) return 'Internet Explorer';
+        if (strpos($userAgent, 'Edg') !== false) {
+            return 'Edge';
+        }
+        if (strpos($userAgent, 'Chrome') !== false) {
+            return 'Chrome';
+        }
+        if (strpos($userAgent, 'Firefox') !== false) {
+            return 'Firefox';
+        }
+        if (strpos($userAgent, 'Safari') !== false) {
+            return 'Safari';
+        }
+        if (strpos($userAgent, 'Opera') !== false || strpos($userAgent, 'OPR') !== false) {
+            return 'Opera';
+        }
+        if (strpos($userAgent, 'MSIE') !== false || strpos($userAgent, 'Trident') !== false) {
+            return 'Internet Explorer';
+        }
+
         return 'Unknown';
     }
 
@@ -133,11 +146,22 @@ class LoginHistory extends Model
      */
     protected static function getPlatform($userAgent)
     {
-        if (strpos($userAgent, 'Windows') !== false) return 'Windows';
-        if (strpos($userAgent, 'Mac') !== false) return 'Mac OS';
-        if (strpos($userAgent, 'Linux') !== false) return 'Linux';
-        if (strpos($userAgent, 'Android') !== false) return 'Android';
-        if (strpos($userAgent, 'iPhone') !== false || strpos($userAgent, 'iPad') !== false) return 'iOS';
+        if (strpos($userAgent, 'Windows') !== false) {
+            return 'Windows';
+        }
+        if (strpos($userAgent, 'Mac') !== false) {
+            return 'Mac OS';
+        }
+        if (strpos($userAgent, 'Linux') !== false) {
+            return 'Linux';
+        }
+        if (strpos($userAgent, 'Android') !== false) {
+            return 'Android';
+        }
+        if (strpos($userAgent, 'iPhone') !== false || strpos($userAgent, 'iPad') !== false) {
+            return 'iOS';
+        }
+
         return 'Unknown';
     }
 
@@ -150,8 +174,10 @@ class LoginHistory extends Model
             if (strpos($userAgent, 'Tablet') !== false || strpos($userAgent, 'iPad') !== false) {
                 return 'Tablet';
             }
+
             return 'Mobile';
         }
+
         return 'Desktop';
     }
 

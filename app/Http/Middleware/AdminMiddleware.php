@@ -8,10 +8,10 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * AdminMiddleware - Restricts access to SUPERADMIN role ONLY
- * 
+ *
  * This middleware ensures that ONLY users with the 'superadmin' role can access
  * protected routes. No other role (including 'admin' if it exists) should have access.
- * 
+ *
  * Note: Despite the class name 'AdminMiddleware', this strictly checks for 'superadmin' role.
  */
 class AdminMiddleware
@@ -24,7 +24,7 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             return redirect()->route('login');
         }
 

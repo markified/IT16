@@ -15,11 +15,29 @@ class Category extends Model
         'description',
         'icon',
         'is_active',
+        'is_archived',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'is_archived' => 'boolean',
     ];
+
+    /**
+     * Scope to filter out archived categories.
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('is_archived', false);
+    }
+
+    /**
+     * Scope to get only archived categories.
+     */
+    public function scopeArchived($query)
+    {
+        return $query->where('is_archived', true);
+    }
 
     public function products()
     {

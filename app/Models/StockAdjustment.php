@@ -41,7 +41,8 @@ class StockAdjustment extends Model
         $prefix = 'ADJ';
         $date = now()->format('Ymd');
         $lastAdjustment = self::whereDate('created_at', today())->latest()->first();
-        $sequence = $lastAdjustment ? (int)substr($lastAdjustment->reference_number, -4) + 1 : 1;
+        $sequence = $lastAdjustment ? (int) substr($lastAdjustment->reference_number, -4) + 1 : 1;
+
         return $prefix . $date . str_pad($sequence, 4, '0', STR_PAD_LEFT);
     }
 

@@ -12,7 +12,8 @@ class SupplierController extends Controller
      */
     public function index()
     {
-        $suppliers = Supplier::orderBy('created_at', 'DESC')->get();
+        $suppliers = Supplier::active()->orderBy('created_at', 'DESC')->get();
+
         return view('suppliers.index', compact('suppliers'));
     }
 
@@ -32,7 +33,7 @@ class SupplierController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'contact_number' => 'required|string|max:255',
-            'email' => 'required|email|max:255'
+            'email' => 'required|email|max:255',
         ], [
             'name.required' => 'Supplier name is required.',
             'contact_number.required' => 'Contact number is required.',
@@ -42,6 +43,7 @@ class SupplierController extends Controller
 
         try {
             Supplier::create($validated);
+
             return redirect()->route('suppliers')->with('success', 'Supplier added successfully');
         } catch (\Exception $e) {
             return redirect()->back()->withInput()->with('error', 'Failed to create supplier. Please try again.');
@@ -54,6 +56,7 @@ class SupplierController extends Controller
     public function show(string $id)
     {
         $supplier = Supplier::with('suppliedProducts')->findOrFail($id);
+
         return view('suppliers.show', compact('supplier'));
     }
 
@@ -63,6 +66,7 @@ class SupplierController extends Controller
     public function edit(string $id)
     {
         $supplier = Supplier::findOrFail($id);
+
         return view('suppliers.edit', compact('supplier'));
     }
 
@@ -76,7 +80,7 @@ class SupplierController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'contact_number' => 'required|string|max:255',
-            'email' => 'required|email|max:255'
+            'email' => 'required|email|max:255',
         ], [
             'name.required' => 'Supplier name is required.',
             'contact_number.required' => 'Contact number is required.',
@@ -86,6 +90,7 @@ class SupplierController extends Controller
 
         try {
             $supplier->update($validated);
+
             return redirect()->route('suppliers')->with('success', 'Supplier updated successfully');
         } catch (\Exception $e) {
             return redirect()->back()->withInput()->with('error', 'Failed to update supplier. Please try again.');
@@ -93,34 +98,84 @@ class SupplierController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Archive the specified resource.
      */
     public function destroy(string $id)
     {
         try {
             $supplier = Supplier::findOrFail($id);
+            $supplier->update(['is_archived' => true]);
 
-            // Check if supplier is used in any purchase order
-            if ($supplier->purchaseOrders()->count() > 0) {
-                return redirect()->route('suppliers')
-                    ->with('error', 'Cannot delete supplier because it is used in one or more purchase orders.');
-            }
-
-            $supplier->delete();
-            return redirect()->route('suppliers')->with('success', 'Supplier deleted successfully');
+            return redirect()->route('suppliers')->with('success', 'Supplier archived successfully');
         } catch (\Exception $e) {
-            return redirect()->route('suppliers')->with('error', 'Failed to delete supplier. Please try again.');
+            return redirect()->route('suppliers')->with('error', 'Failed to archive supplier. Please try again.');
         }
     }
 
     // Add this method to support AJAX supplier filtering by product
     public function suppliersForProduct(Request $request)
     {
-        $productId = $request->input('product_id');
-        if (!$productId) {
-            return response()->json([]);
+        try {
+            // Validate product_id
+            $request->validate([
+                'product_id' => 'required|integer|exists:products,id',
+            ]);
+
+            $productId = $request->input('product_id');
+            $product = \App\Models\Product::with('suppliers')->find($productId);
+
+            return response()->json($product ? $product->suppliers : []);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['error' => 'Invalid product ID'], 422);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to fetch suppliers'], 500);
         }
-        $product = \App\Models\Product::with('suppliers')->find($productId);
-        return response()->json($product ? $product->suppliers : []);
+    }
+
+    /**
+     * Display archived suppliers.
+     */
+    public function archived()
+    {
+        $suppliers = Supplier::archived()->orderBy('updated_at', 'DESC')->get();
+
+        return view('suppliers.archived', compact('suppliers'));
+    }
+
+    /**
+     * Restore an archived supplier.
+     */
+    public function restore(string $id)
+    {
+        try {
+            $supplier = Supplier::findOrFail($id);
+            $supplier->update(['is_archived' => false]);
+
+            return redirect()->back()->with('success', 'Supplier restored successfully');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to restore supplier. Please try again.');
+        }
+    }
+
+    /**
+     * Permanently delete an archived supplier.
+     */
+    public function permanentDelete(string $id)
+    {
+        try {
+            $supplier = Supplier::findOrFail($id);
+
+            // Only allow permanent deletion of archived suppliers
+            if (! $supplier->is_archived) {
+                return redirect()->back()->with('error', 'Only archived suppliers can be permanently deleted.');
+            }
+
+            $supplierName = $supplier->name;
+            $supplier->delete();
+
+            return redirect()->back()->with('success', "Supplier '{$supplierName}' has been permanently deleted.");
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to delete supplier permanently. Please try again.');
+        }
     }
 }

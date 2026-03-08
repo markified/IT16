@@ -60,7 +60,7 @@
                         <td>
                             <div class="d-flex">
                                 <a href="{{ route('purchase-orders.show', $po->id) }}" class="btn btn-info btn-sm me-1">
-                                    <i class="fa fa-eye"></i> View
+                                    <i class="fa fa-list"></i> View
                                 </a>
                                 @if ($po->status == 'pending')
                                 <form action="{{ route('purchase-orders.destroy', $po->id) }}" method="POST">

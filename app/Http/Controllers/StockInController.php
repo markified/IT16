@@ -27,7 +27,8 @@ class StockInController extends Controller
      */
     public function create()
     {
-        $products = Product::orderBy('name')->get();
+        $products = Product::with('suppliers')->orderBy('name')->get();
+
         return view('stock-in.create', compact('products'));
     }
 
@@ -63,9 +64,9 @@ class StockInController extends Controller
 
             return redirect()->route('stock-in.index')
                 ->with('success', 'Stock added successfully. ' . $validated['quantity'] . ' units added to ' . $product->name);
-
         } catch (\Exception $e) {
             DB::rollBack();
+
             return redirect()->back()
                 ->withInput()
                 ->withErrors(['error' => 'Failed to add stock: ' . $e->getMessage()]);
@@ -78,6 +79,7 @@ class StockInController extends Controller
     public function show($id)
     {
         $stockIn = StockIn::with('product')->findOrFail($id);
+
         return view('stock-in.show', compact('stockIn'));
     }
 
@@ -87,7 +89,7 @@ class StockInController extends Controller
     public function destroy($id)
     {
         $stockIn = StockIn::findOrFail($id);
-        
+
         DB::beginTransaction();
 
         try {
@@ -104,9 +106,9 @@ class StockInController extends Controller
 
             return redirect()->route('stock-in.index')
                 ->with('success', 'Stock in record deleted and inventory adjusted.');
-
         } catch (\Exception $e) {
             DB::rollBack();
+
             return redirect()->back()
                 ->withErrors(['error' => 'Failed to delete record: ' . $e->getMessage()]);
         }

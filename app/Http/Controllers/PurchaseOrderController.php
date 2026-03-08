@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
 use App\Models\OrderDetail;
+use App\Models\Product;
 use App\Models\PurchaseOrder;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
@@ -30,6 +30,7 @@ class PurchaseOrderController extends Controller
     {
         $suppliers = Supplier::all();
         $products = Product::all();
+
         return view('purchase-orders.create', compact('suppliers', 'products'));
     }
 
@@ -81,6 +82,7 @@ class PurchaseOrderController extends Controller
                 ->with('success', 'Purchase order created successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
+
             return back()->withErrors(['error' => 'Failed to create purchase order. ' . $e->getMessage()]);
         }
     }
@@ -91,6 +93,7 @@ class PurchaseOrderController extends Controller
     public function show($id)
     {
         $purchaseOrder = PurchaseOrder::with(['products', 'supplier'])->findOrFail($id);
+
         return view('purchase-orders.show', compact('purchaseOrder'));
     }
 
@@ -103,12 +106,16 @@ class PurchaseOrderController extends Controller
             'status' => 'required|in:pending,approved,received,cancelled',
         ]);
 
-        $purchaseOrder->update([
-            'status' => $request->status,
-        ]);
+        try {
+            $purchaseOrder->update([
+                'status' => $request->status,
+            ]);
 
-        return redirect()->route('purchase-orders.show', $purchaseOrder)
-            ->with('success', 'Purchase order status updated successfully.');
+            return redirect()->route('purchase-orders.show', $purchaseOrder)
+                ->with('success', 'Purchase order status updated successfully.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to update purchase order status. Please try again.');
+        }
     }
 
     /**
@@ -118,13 +125,17 @@ class PurchaseOrderController extends Controller
     {
         // Only allow deletion of pending purchase orders
         if ($purchaseOrder->status !== 'pending') {
-            return back()->withErrors(['error' => 'Only pending purchase orders can be deleted.']);
+            return back()->with('error', 'Only pending purchase orders can be deleted.');
         }
 
-        $purchaseOrder->delete();
+        try {
+            $purchaseOrder->delete();
 
-        return redirect()->route('purchase-orders.index')
-            ->with('success', 'Purchase order deleted successfully.');
+            return redirect()->route('purchase-orders.index')
+                ->with('success', 'Purchase order deleted successfully.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to delete purchase order. Please try again.');
+        }
     }
 
     /**
@@ -138,6 +149,7 @@ class PurchaseOrderController extends Controller
         }
 
         $purchaseOrder->load(['supplier', 'orderDetails.product', 'orderDetails.receivings']);
+
         return view('receivings.receive', compact('purchaseOrder'));
     }
 
@@ -204,6 +216,7 @@ class PurchaseOrderController extends Controller
                 ->with('success', 'Items received successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
+
             return back()->withErrors(['error' => 'Failed to process receiving. ' . $e->getMessage()]);
         }
     }

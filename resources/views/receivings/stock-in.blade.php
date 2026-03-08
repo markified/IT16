@@ -44,7 +44,7 @@
                         </td>
                         <td>
                         <a href="{{ route('purchase-orders.show', $po->id) }}" class="btn btn-info btn-sm me-1">
-                                  <i class="fa fa-eye"></i> View
+                                  <i class="fa fa-list"></i> View
                                 </a>
                             @if($po->status == 'pending')
                                 <form action="{{ route('purchase-orders.update-status', $po->id) }}" method="POST" style="display:inline-block;">

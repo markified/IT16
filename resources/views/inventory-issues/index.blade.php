@@ -55,7 +55,7 @@
                             </td>
                             <td class="text-center align-middle">
                                 <a href="{{ route('inventory-issues.show', $issue->id) }}" class="btn btn-info btn-sm" title="View Details">
-                                    <i class="fas fa-eye"></i>
+                                    <i class="fas fa-list"></i>
                                 </a>
                             </td>
                         </tr>

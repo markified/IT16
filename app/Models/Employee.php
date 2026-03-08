@@ -11,7 +11,7 @@ class Employee extends Model
 
     protected $fillable = [
         'name',
-        'contact_number'
+        'contact_number',
     ];
 
     public function inventoryIssues()

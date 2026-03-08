@@ -6,53 +6,66 @@ This application implements a comprehensive Role-Based Access Control (RBAC) sys
 **IMPORTANT SECURITY NOTE**: 
 - The highest privilege role is `'superadmin'` (stored as the exact string 'superadmin' in the database)
 - Superadmin has FULL access to all system features and settings
-- The middleware is named 'superadmin' and strictly checks for the 'superadmin' role ONLY
-- No other role has the same level of access as superadmin
+- The middleware named 'superadmin' strictly checks for the 'superadmin' role ONLY
+- The new `'admin'` role has LIMITED administrative access (Dashboard, Users, Audit Logs, Custom Reports)
+- Admin middleware allows both 'superadmin' and 'admin' roles
 
 ## Roles
 
-The system supports four distinct user roles:
+The system supports five distinct user roles:
 
 ### 1. Superadmin
 - **Full System Access**: Complete control over all features and settings
-- **User Management**: Create, edit, and delete user accounts
+- **User Management**: Create, edit, and delete user accounts (including admin users)
 - **Security Management**: Access to security settings, login history, and session management
 - **Database Management**: Backup, restore, and optimize database
 - **Inventory Management**: Full access to all inventory features
 - **All Reports**: Access to all reporting features
 
-### 2. Inventory
+### 2. Admin
+- **Limited Administrative Access**: Dashboard, User Management, Audit Trail, and Custom Reports
+- **User Management**: Create and manage users (except superadmin and admin roles)
+- **Audit Trail**: View audit logs and system activities
+- **Custom Reports**: Create and manage custom reports
+- **No Inventory Access**: Cannot access inventory, suppliers, stock management
+- **No Security Settings**: Cannot access security or database management
+
+### 3. Inventory
 - **Inventory Operations**: Manage products, categories, and suppliers
 - **Stock Management**: Handle stock in, stock out, and adjustments
 - **Inventory Reports**: View and generate inventory-related reports
 - **Limited Administrative Access**: No access to user management or system settings
 
-### 3. Security
+### 4. Security
 - **Audit Trail**: View and monitor audit logs
 - **Login History**: Access login history and security events
-- **Limited Access**: No access to inventory or system administration
+- **Security Settings**: Configure security parameters
+- **Database Management**: Backup and restore operations
+- **Limited Access**: No access to inventory or user management
 
-### 4. Employee
+### 5. Employee
 - **Basic Access**: View dashboard only
 - **No Management Features**: Cannot modify data or access administrative features
 
 ## Access Control Matrix
 
-| Feature                    | Superadmin | Inventory | Security | Employee |
-|---------------------------|------------|-----------|----------|----------|
-| Dashboard                 | ✓          | ✓         | ✗        | ✓        |
-| Products Management       | ✓          | ✓         | ✗        | ✗        |
-| Categories Management     | ✓          | ✓         | ✗        | ✗        |
-| Suppliers Management      | ✓          | ✓         | ✗        | ✗        |
-| Stock In                  | ✓          | ✓         | ✗        | ✗        |
-| Stock Out                 | ✓          | ✓         | ✗        | ✗        |
-| Stock Adjustments         | ✓          | ✓         | ✗        | ✗        |
-| Inventory Reports         | ✓          | ✓         | ✗        | ✗        |
-| Audit Logs                | ✓          | ✗         | ✗        | ✗        |
-| User Management           | ✓          | ✗         | ✗        | ✗        |
-| Custom Reports            | ✓          | ✗         | ✗        | ✗        |
-| Security Settings         | ✓          | ✗         | ✓        | ✗        |
-| Database Management       | ✓          | ✗         | ✓        | ✗        |
+| Feature                    | Superadmin | Admin | Inventory | Security | Employee |
+|---------------------------|------------|-------|-----------|----------|----------|
+| Dashboard                 | ✓          | ✓     | ✓         | ✗        | ✓        |
+| Products Management       | ✓          | ✗     | ✓         | ✗        | ✗        |
+| Categories Management     | ✓          | ✗     | ✓         | ✗        | ✗        |
+| Suppliers Management      | ✓          | ✗     | ✓         | ✗        | ✗        |
+| Stock In                  | ✓          | ✗     | ✓         | ✗        | ✗        |
+| Stock Out                 | ✓          | ✗     | ✓         | ✗        | ✗        |
+| Stock Adjustments         | ✓          | ✗     | ✓         | ✗        | ✗        |
+| Inventory Reports         | ✓          | ✗     | ✓         | ✗        | ✗        |
+| Audit Logs                | ✓          | ✓     | ✗         | ✗        | ✗        |
+| User Management           | ✓          | ✓*    | ✗         | ✗        | ✗        |
+| Custom Reports            | ✓          | ✓     | ✗         | ✗        | ✗        |
+| Security Settings         | ✓          | ✗     | ✗         | ✓        | ✗        |
+| Database Management       | ✓          | ✗     | ✗         | ✓        | ✗        |
+
+*Admin can manage users but cannot create/modify superadmin or admin roles
 
 ## Implementation
 
@@ -63,7 +76,16 @@ The system supports four distinct user roles:
 // Restricts access to SUPERADMIN role ONLY
 Route::middleware('superadmin')->group(function () {
     // Routes only accessible by users with 'superadmin' role
-    // Includes: User Management, Database Management, Security Management
+    // Used for system-critical operations
+});
+```
+
+#### Admin Middleware (AdminViewMiddleware)
+```php
+// Allows both 'superadmin' and 'admin' roles
+Route::middleware('admin')->group(function () {
+    // Routes accessible by both superadmin and admin users
+    // Includes: User Management, Audit Trail, Custom Reports
 });
 ```
 
@@ -98,6 +120,21 @@ Route::middleware('role:superadmin,inventory')->group(function () {
 ```php
 // Check specific role
 $user->isAdmin()           // Returns true if superadmin
+$user->isRegularAdmin()    // Returns true if admin (limited access)
+$user->isInventory()       // Returns true if inventory
+$user->isSecurity()        // Returns true if security
+$user->isEmployee()        // Returns true if employee
+
+// Check multiple roles
+$user->hasRole('admin')                         // Single role check
+$user->hasRole(['superadmin', 'admin'])         // Multiple roles check
+$user->hasAnyRole(['superadmin', 'admin'])      // Check if has any of the roles
+
+// Permission checks
+$user->canManageInventory()     // Returns true if superadmin or inventory
+$user->canManageSecurity()      // Returns true if superadmin or security
+$user->canAccessAdminFeatures() // Returns true if superadmin or admin
+```
 $user->isInventory()       // Returns true if inventory
 $user->isSecurity()        // Returns true if security
 $user->isEmployee()        // Returns true if employee
@@ -122,14 +159,22 @@ Custom Blade directives for use in views:
     <a href="{{ route('users.index') }}">Manage Users</a>
 @endrole
 
+@role('admin')
+    <a href="{{ route('audit-logs.index') }}">Audit Trail</a>
+@endrole
+
 {{-- Check for any of multiple roles --}}
+@hasanyrole(['superadmin', 'admin'])
+    <a href="{{ route('users.index') }}">Manage Users</a>
+@endhasanyrole
+
 @hasanyrole(['superadmin', 'inventory'])
     <a href="{{ route('products') }}">Products</a>
 @endhasanyrole
 
 {{-- Shorthand directives --}}
 @superadmin
-    <button>Admin Only Button</button>
+    <button>Superadmin Only Button</button>
 @endsuperadmin
 
 @inventory
@@ -137,7 +182,7 @@ Custom Blade directives for use in views:
 @endinventory
 
 @security
-    <a href="{{ route('audit-logs.index') }}">Audit Logs</a>
+    <a href="{{ route('security.settings') }}">Security Settings</a>
 @endsecurity
 ```
 
@@ -146,11 +191,17 @@ Custom Blade directives for use in views:
 Routes are organized and protected by middleware:
 
 ```php
-// Superadmin only routes
+// Superadmin only routes (system-critical operations)
+Route::middleware('superadmin')->group(function () {
+    // Routes that require full system access
+    // Currently used for highest-level operations
+});
+
+// Admin routes (superadmin and admin can access)
 Route::middleware('admin')->group(function () {
     Route::resource('users', UserController::class);
-    Route::prefix('database')->group(function () { /* ... */ });
-    Route::prefix('security')->group(function () { /* ... */ });
+    Route::prefix('audit-logs')->group(function () { /* ... */ });
+    Route::prefix('reports')->group(function () { /* ... */ });
 });
 
 // Inventory management routes
@@ -163,8 +214,9 @@ Route::middleware('inventory')->group(function () {
 });
 
 // Security routes
-Route::middleware('security')->group(function () {
-    Route::prefix('audit-logs')->group(function () { /* ... */ });
+Route::middleware('role:superadmin,security')->group(function () {
+    Route::prefix('security')->group(function () { /* ... */ });
+    Route::prefix('database')->group(function () { /* ... */ });
 });
 ```
 
@@ -234,8 +286,16 @@ Users can register with limited roles (inventory or security):
 ### By Superadmin
 Superadmins can assign any role when creating users:
 ```php
-'role' => 'required|in:superadmin,employee,inventory,security'
+'role' => 'required|in:superadmin,admin,inventory,security,employee'
 ```
+
+### By Admin
+Admins can assign limited roles when creating users:
+```php
+'role' => 'required|in:inventory,security,employee'
+```
+
+**Important**: Only superadmin users can create other superadmin or admin users.
 
 ## Security Considerations
 
@@ -249,8 +309,10 @@ Superadmins can assign any role when creating users:
 
 ### Manual Testing Checklist
 - [ ] Superadmin can access all features
+- [ ] Admin can access Dashboard, Users, Audit Trail, and Custom Reports only
+- [ ] Admin cannot access Inventory, Security Settings, or Database Management
 - [ ] Inventory users can only access inventory features
-- [ ] Security users can only access audit logs
+- [ ] Security users can only access security and database features
 - [ ] Employees can only view dashboard
 - [ ] Direct URL access to restricted routes returns 403
 - [ ] Navigation menus show only allowed items for each role
@@ -264,6 +326,13 @@ php artisan tinker
 
 ```php
 // Create test users
+User::create([
+    'name' => 'Test Admin',
+    'email' => 'admin@test.com',
+    'password' => bcrypt('password'),
+    'role' => 'admin'
+]);
+
 User::create([
     'name' => 'Test Inventory',
     'email' => 'inventory@test.com',
@@ -319,6 +388,16 @@ Potential improvements to the RBAC system:
 
 ## Changelog
 
+### Version 1.1 (March 5, 2026)
+- Added new 'Admin' role with limited administrative access
+- Admin role can access: Dashboard, User Management, Audit Trail, Custom Reports
+- Admin cannot access: Inventory, Security Settings, Database Management
+- Created AdminViewMiddleware for admin role access control
+- Updated User model with `isRegularAdmin()` and `canAccessAdminFeatures()` helper methods
+- Updated sidebar navigation to properly display admin-accessible menu items
+- Modified user creation/editing to allow role-based permissions (superadmin can create admin users)
+- Updated documentation to reflect new role structure
+
 ### Version 1.0 (March 4, 2026)
 - Initial RBAC implementation
 - Four distinct roles: Superadmin, Inventory, Security, Employee
@@ -329,5 +408,5 @@ Potential improvements to the RBAC system:
 
 ---
 
-**Last Updated**: March 4, 2026  
+**Last Updated**: March 5, 2026  
 **Maintained By**: Development Team

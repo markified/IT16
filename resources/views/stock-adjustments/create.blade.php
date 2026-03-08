@@ -53,14 +53,11 @@
                             <label class="form-label">Adjustment Type <span class="text-danger">*</span></label>
                             <select name="adjustment_type" id="adjustment_type" class="form-control @error('adjustment_type') is-invalid @enderror" required>
                                 <option value="">-- Select Type --</option>
-                                <option value="increase" {{ old('adjustment_type') == 'increase' ? 'selected' : '' }}>
-                                    Increase (Add to stock)
+                                <option value="add" {{ old('adjustment_type') == 'add' ? 'selected' : '' }}>
+                                    Add Stock (+)
                                 </option>
-                                <option value="decrease" {{ old('adjustment_type') == 'decrease' ? 'selected' : '' }}>
-                                    Decrease (Remove from stock)
-                                </option>
-                                <option value="correction" {{ old('adjustment_type') == 'correction' ? 'selected' : '' }}>
-                                    Correction (Set exact quantity)
+                                <option value="remove" {{ old('adjustment_type') == 'remove' ? 'selected' : '' }}>
+                                    Remove Stock (-)
                                 </option>
                             </select>
                             @error('adjustment_type')
@@ -69,11 +66,11 @@
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label class="form-label" id="quantity_label">Quantity <span class="text-danger">*</span></label>
+                            <label class="form-label" id="quantity_label">Quantity to Adjust <span class="text-danger">*</span></label>
                             <input type="number" name="quantity_adjusted" id="quantity_adjusted" 
                                 class="form-control @error('quantity_adjusted') is-invalid @enderror"
-                                value="{{ old('quantity_adjusted') }}" min="0" required>
-                            <small id="quantity_help" class="text-muted">Enter the quantity to adjust</small>
+                                value="{{ old('quantity_adjusted') }}" min="1" required>
+                            <small id="quantity_help" class="text-muted">Enter the quantity to add or remove</small>
                             @error('quantity_adjusted')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -142,9 +139,8 @@
         <div class="card shadow mb-4 border-left-info">
             <div class="card-body">
                 <h6 class="font-weight-bold text-info">Adjustment Types</h6>
-                <p class="small mb-2"><strong>Increase:</strong> Add units (found items, returns)</p>
-                <p class="small mb-2"><strong>Decrease:</strong> Remove units (damage, theft, loss)</p>
-                <p class="small mb-0"><strong>Correction:</strong> Set exact count (after physical count)</p>
+                <p class="small mb-2"><strong>Add Stock:</strong> Increase inventory (found items, returns, corrections)</p>
+                <p class="small mb-0"><strong>Remove Stock:</strong> Decrease inventory (damage, theft, loss, corrections)</p>
             </div>
         </div>
     </div>
@@ -170,21 +166,16 @@ document.addEventListener('DOMContentLoaded', function() {
         let newStock = currentStock;
         let adjustmentText = '--';
         
-        if (type === 'increase') {
+        if (type === 'add') {
             newStock = currentStock + quantity;
             adjustmentText = quantity > 0 ? '+' + quantity : '--';
             quantityLabel.innerHTML = 'Quantity to Add <span class="text-danger">*</span>';
             quantityHelp.textContent = 'Units to add to stock';
-        } else if (type === 'decrease') {
+        } else if (type === 'remove') {
             newStock = Math.max(0, currentStock - quantity);
             adjustmentText = quantity > 0 ? '-' + quantity : '--';
             quantityLabel.innerHTML = 'Quantity to Remove <span class="text-danger">*</span>';
             quantityHelp.textContent = 'Units to remove from stock';
-        } else if (type === 'correction') {
-            newStock = quantity;
-            adjustmentText = quantity !== currentStock ? (quantity - currentStock > 0 ? '+' : '') + (quantity - currentStock) : '0';
-            quantityLabel.innerHTML = 'New Quantity <span class="text-danger">*</span>';
-            quantityHelp.textContent = 'Set the exact stock count';
         }
         
         document.getElementById('preview_adjustment').textContent = adjustmentText;

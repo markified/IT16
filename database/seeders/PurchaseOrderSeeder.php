@@ -43,7 +43,7 @@ class PurchaseOrderSeeder extends Seeder
 
             // Get products from the supplier (or if none, use random products)
             $supplierProductIds = $supplier->products()->pluck('products.id')->toArray();
-            $productPool = !empty($supplierProductIds) ?
+            $productPool = ! empty($supplierProductIds) ?
                 Product::whereIn('id', $supplierProductIds)->get() :
                 $products->random(min(5, $products->count()));
 

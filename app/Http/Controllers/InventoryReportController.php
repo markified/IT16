@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
 use App\Models\Category;
-use App\Models\StockIn;
 use App\Models\InventoryIssue;
+use App\Models\Product;
 use App\Models\StockAdjustment;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Models\StockIn;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class InventoryReportController extends Controller
 {
@@ -34,8 +33,8 @@ class InventoryReportController extends Controller
 
         $summary = [
             'total_items' => $products->sum('quantity'),
-            'total_retail_value' => $products->sum(fn($p) => $p->quantity * $p->price_per_item),
-            'total_cost_value' => $products->sum(fn($p) => $p->quantity * $p->cost_price),
+            'total_retail_value' => $products->sum(fn ($p) => $p->quantity * $p->price_per_item),
+            'total_cost_value' => $products->sum(fn ($p) => $p->quantity * $p->cost_price),
             'potential_profit' => 0,
         ];
         $summary['potential_profit'] = $summary['total_retail_value'] - $summary['total_cost_value'];
@@ -168,8 +167,9 @@ class InventoryReportController extends Controller
             ->get()
             ->map(function ($category) {
                 $category->total_stock = $category->products->sum('quantity');
-                $category->total_value = $category->products->sum(fn($p) => $p->quantity * $p->price_per_item);
-                $category->low_stock_count = $category->products->filter(fn($p) => $p->isLowStock())->count();
+                $category->total_value = $category->products->sum(fn ($p) => $p->quantity * $p->price_per_item);
+                $category->low_stock_count = $category->products->filter(fn ($p) => $p->isLowStock())->count();
+
                 return $category;
             });
 
@@ -188,57 +188,72 @@ class InventoryReportController extends Controller
      */
     public function export(Request $request, string $type)
     {
-        $filename = "inventory_{$type}_" . date('Y-m-d') . '.csv';
+        // Validate export type
+        if (! in_array($type, ['valuation', 'low-stock', 'movement', 'category'])) {
+            return redirect()->back()->with('error', 'Invalid export type specified.');
+        }
 
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => "attachment; filename=\"$filename\"",
-        ];
+        try {
+            $filename = "inventory_{$type}_" . date('Y-m-d') . '.csv';
 
-        $callback = function () use ($type, $request) {
-            $file = fopen('php://output', 'w');
+            $headers = [
+                'Content-Type' => 'text/csv',
+                'Content-Disposition' => "attachment; filename=\"$filename\"",
+            ];
 
-            switch ($type) {
-                case 'valuation':
-                    fputcsv($file, ['SKU', 'Name', 'Category', 'Quantity', 'Cost Price', 'Retail Price', 'Cost Value', 'Retail Value']);
-                    $products = Product::with('category')->where('status', '!=', 'retired')->get();
-                    foreach ($products as $p) {
-                        fputcsv($file, [
-                            $p->sku,
-                            $p->name,
-                            $p->category->name ?? 'Uncategorized',
-                            $p->quantity,
-                            $p->cost_price,
-                            $p->price_per_item,
-                            $p->quantity * $p->cost_price,
-                            $p->quantity * $p->price_per_item,
-                        ]);
+            $callback = function () use ($type) {
+                $file = fopen('php://output', 'w');
+
+                if ($file === false) {
+                    throw new \Exception('Failed to open output stream');
+                }
+
+                try {
+                    switch ($type) {
+                        case 'valuation':
+                            fputcsv($file, ['SKU', 'Name', 'Category', 'Quantity', 'Cost Price', 'Retail Price', 'Cost Value', 'Retail Value']);
+                            $products = Product::with('category')->where('status', '!=', 'retired')->get();
+                            foreach ($products as $p) {
+                                fputcsv($file, [
+                                    $p->sku,
+                                    $p->name,
+                                    $p->category->name ?? 'Uncategorized',
+                                    $p->quantity,
+                                    $p->cost_price,
+                                    $p->price_per_item,
+                                    $p->quantity * $p->cost_price,
+                                    $p->quantity * $p->price_per_item,
+                                ]);
+                            }
+                            break;
+
+                        case 'low-stock':
+                            fputcsv($file, ['SKU', 'Name', 'Category', 'Current Stock', 'Min Level', 'Shortage', 'Status']);
+                            $products = Product::with('category')
+                                ->whereRaw('quantity <= min_stock_level')
+                                ->where('status', '!=', 'retired')
+                                ->get();
+                            foreach ($products as $p) {
+                                fputcsv($file, [
+                                    $p->sku,
+                                    $p->name,
+                                    $p->category->name ?? 'Uncategorized',
+                                    $p->quantity,
+                                    $p->min_stock_level,
+                                    $p->min_stock_level - $p->quantity,
+                                    $p->quantity == 0 ? 'Out of Stock' : 'Low Stock',
+                                ]);
+                            }
+                            break;
                     }
-                    break;
+                } finally {
+                    fclose($file);
+                }
+            };
 
-                case 'low-stock':
-                    fputcsv($file, ['SKU', 'Name', 'Category', 'Current Stock', 'Min Level', 'Shortage', 'Status']);
-                    $products = Product::with('category')
-                        ->whereRaw('quantity <= min_stock_level')
-                        ->where('status', '!=', 'retired')
-                        ->get();
-                    foreach ($products as $p) {
-                        fputcsv($file, [
-                            $p->sku,
-                            $p->name,
-                            $p->category->name ?? 'Uncategorized',
-                            $p->quantity,
-                            $p->min_stock_level,
-                            $p->min_stock_level - $p->quantity,
-                            $p->quantity == 0 ? 'Out of Stock' : 'Low Stock',
-                        ]);
-                    }
-                    break;
-            }
-
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
+            return response()->stream($callback, 200, $headers);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to export report. Please try again.');
+        }
     }
 }

@@ -54,15 +54,8 @@
                             <td class="text-center align-middle">
                                 <div class="btn-group btn-group-sm">
                                     <a href="{{ route('stock-in.show', $stockIn->id) }}" class="btn btn-info" title="View Details">
-                                        <i class="fas fa-eye"></i>
+                                        <i class="fas fa-list"></i>
                                     </a>
-                                    <form action="{{ route('stock-in.destroy', $stockIn->id) }}" method="POST">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="button" class="btn btn-danger" title="Delete" data-confirm-delete="Delete this record? This will reverse the stock addition.">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
                                 </div>
                             </td>
                         </tr>

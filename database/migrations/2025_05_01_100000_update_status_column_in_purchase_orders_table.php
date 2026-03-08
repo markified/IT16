@@ -19,4 +19,4 @@ class UpdateStatusColumnInPurchaseOrdersTable extends Migration
             $table->string('status')->change(); // Revert to original type if necessary
         });
     }
-};
+}

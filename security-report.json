@@ -1,0 +1,589 @@
+﻿{
+    "typeErrors":  [
+                       {
+                           "Message":  "Parameter #1 $callback of method Illuminate\\Database\\Eloquent\\Collection\u003cint,App\\Models\\Category\u003e::map() contains unresolvable type.",
+                           "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\DashboardController.php",
+                           "Line":  59
+                       },
+                       {
+                           "Message":  "Parameter #1 $view of function view expects view-string|null, string given.",
+                           "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\ProductController.php",
+                           "Line":  207
+                       },
+                       {
+                           "Message":  "Parameter #1 $view of function view expects view-string|null, string given.",
+                           "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\PurchaseOrderController.php",
+                           "Line":  232
+                       },
+                       {
+                           "Message":  "Parameter #1 $view of function view expects view-string|null, string given.",
+                           "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\PurchaseOrderReceivingController.php",
+                           "Line":  24
+                       },
+                       {
+                           "Message":  "Parameter #1 $view of function view expects view-string|null, string given.",
+                           "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\PurchaseOrderReceivingController.php",
+                           "Line":  39
+                       },
+                       {
+                           "Message":  "Parameter #1 $view of function view expects view-string|null, string given.",
+                           "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\PurchaseOrderReceivingController.php",
+                           "Line":  113
+                       },
+                       {
+                           "Message":  "Method App\\Http\\Controllers\\ReportController::index() should return Illuminate\\Http\\Response but returns Illuminate\\View\\View.",
+                           "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\ReportController.php",
+                           "Line":  24
+                       },
+                       {
+                           "Message":  "Method App\\Http\\Controllers\\ReportController::create() should return Illuminate\\Http\\Response but returns Illuminate\\View\\View.",
+                           "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\ReportController.php",
+                           "Line":  37
+                       },
+                       {
+                           "Message":  "Method App\\Http\\Controllers\\ReportController::store() should return Illuminate\\Http\\Response but returns Illuminate\\Http\\RedirectResponse.",
+                           "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\ReportController.php",
+                           "Line":  75
+                       },
+                       {
+                           "Message":  "Method App\\Http\\Controllers\\ReportController::store() should return Illuminate\\Http\\Response but returns Illuminate\\Http\\RedirectResponse.",
+                           "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\ReportController.php",
+                           "Line":  78
+                       },
+                       {
+                           "Message":  "Method App\\Http\\Controllers\\ReportController::show() should return Illuminate\\Http\\Response but returns Illuminate\\View\\View.",
+                           "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\ReportController.php",
+                           "Line":  90
+                       },
+                       {
+                           "Message":  "Method App\\Http\\Controllers\\ReportController::edit() should return Illuminate\\Http\\Response but returns Illuminate\\View\\View.",
+                           "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\ReportController.php",
+                           "Line":  103
+                       },
+                       {
+                           "Message":  "Method App\\Http\\Controllers\\ReportController::update() should return Illuminate\\Http\\Response but returns Illuminate\\Http\\RedirectResponse.",
+                           "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\ReportController.php",
+                           "Line":  138
+                       },
+                       {
+                           "Message":  "Method App\\Http\\Controllers\\ReportController::update() should return Illuminate\\Http\\Response but returns Illuminate\\Http\\RedirectResponse.",
+                           "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\ReportController.php",
+                           "Line":  141
+                       },
+                       {
+                           "Message":  "Method App\\Http\\Controllers\\ReportController::destroy() should return Illuminate\\Http\\Response but returns Illuminate\\Http\\RedirectResponse.",
+                           "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\ReportController.php",
+                           "Line":  156
+                       },
+                       {
+                           "Message":  "Method App\\Http\\Controllers\\ReportController::destroy() should return Illuminate\\Http\\Response but returns Illuminate\\Http\\RedirectResponse.",
+                           "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\ReportController.php",
+                           "Line":  159
+                       },
+                       {
+                           "Message":  "Method App\\Http\\Controllers\\ReportController::downloadPdf() should return Illuminate\\Http\\Response but returns Illuminate\\Http\\RedirectResponse.",
+                           "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\ReportController.php",
+                           "Line":  274
+                       },
+                       {
+                           "Message":  "Method App\\Http\\Controllers\\ReportViewController::index() should return Illuminate\\Http\\Response but returns Illuminate\\View\\View.",
+                           "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\ReportViewController.php",
+                           "Line":  18
+                       },
+                       {
+                           "Message":  "Parameter #1 $view of function view expects view-string|null, string given.",
+                           "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\ReportViewController.php",
+                           "Line":  18
+                       },
+                       {
+                           "Message":  "Method App\\Http\\Controllers\\ReportViewController::show() should return Illuminate\\Http\\Response but returns Illuminate\\View\\View.",
+                           "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\ReportViewController.php",
+                           "Line":  31
+                       },
+                       {
+                           "Message":  "Parameter #1 $view of function view expects view-string|null, string given.",
+                           "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\UserController.php",
+                           "Line":  28
+                       },
+                       {
+                           "Message":  "Parameter #1 $view of function view expects view-string|null, string given.",
+                           "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\UserController.php",
+                           "Line":  88
+                       },
+                       {
+                           "Message":  "Parameter #1 $view of function view expects view-string|null, string given.",
+                           "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\UserController.php",
+                           "Line":  98
+                       },
+                       {
+                           "Message":  "Parameter #1 $string of function str_pad expects string, (float|int) given.",
+                           "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Models\\Product.php",
+                           "Line":  74
+                       },
+                       {
+                           "Message":  "Parameter #1 $string of function str_pad expects string, int\u003c1, 9999999999\u003e given.",
+                           "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Models\\Product.php",
+                           "Line":  79
+                       },
+                       {
+                           "Message":  "Parameter #1 $string of function str_pad expects string, int given.",
+                           "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Models\\StockAdjustment.php",
+                           "Line":  46
+                       },
+                       {
+                           "Message":  "Parameter #1 $string of function str_pad expects string, int given.",
+                           "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Models\\StockOutOrder.php",
+                           "Line":  74
+                       }
+                   ],
+    "timestamp":  "2026-03-08 01:50:05",
+    "level":  5,
+    "composerVulnerabilities":  [
+
+                                ],
+    "otherIssues":  [
+                        {
+                            "Message":  "Offset \u0027completed\u0027|\u0027failed\u0027|\u0027pending\u0027 on array{pending: \u0027\u003cspan class=\"badgeΓÇª\u0027, completed: \u0027\u003cspan class=\"badgeΓÇª\u0027, failed: \u0027\u003cspan class=\"badgeΓÇª\u0027} on left side of ?? always exists and is not nullable.",
+                            "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Models\\DatabaseBackup.php",
+                            "Line":  80
+                        },
+                        {
+                            "Message":  "Offset \u0027auto\u0027|\u0027manual\u0027|\u0027scheduled\u0027 on array{manual: \u0027\u003cspan class=\"badgeΓÇª\u0027, scheduled: \u0027\u003cspan class=\"badgeΓÇª\u0027, auto: \u0027\u003cspan class=\"badgeΓÇª\u0027} on left side of ?? always exists and is not nullable.",
+                            "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Models\\DatabaseBackup.php",
+                            "Line":  94
+                        },
+                        {
+                            "Message":  "Offset \u0027blocked\u0027|\u0027failed\u0027|\u0027success\u0027 on array{success: \u0027\u003cspan class=\"badgeΓÇª\u0027, failed: \u0027\u003cspan class=\"badgeΓÇª\u0027, blocked: \u0027\u003cspan class=\"badgeΓÇª\u0027} on left side of ?? always exists and is not nullable.",
+                            "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Models\\LoginHistory.php",
+                            "Line":  195
+                        },
+                        {
+                            "Message":  "Cannot call method isFuture() on string.",
+                            "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Models\\User.php",
+                            "Line":  80
+                        }
+                    ],
+    "summary":  {
+                    "undefined":  82,
+                    "typeErrors":  27,
+                    "security":  0,
+                    "other":  4,
+                    "total":  113,
+                    "composerVulns":  0
+                },
+    "securityIssues":  [
+
+                       ],
+    "undefinedIssues":  [
+                            {
+                                "Message":  "Relation \u0027user\u0027 is not found in App\\Models\\AuditLog model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\AuditLogController.php",
+                                "Line":  13
+                            },
+                            {
+                                "Message":  "Relation \u0027user\u0027 is not found in App\\Models\\AuditLog model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\AuditLogController.php",
+                                "Line":  48
+                            },
+                            {
+                                "Message":  "Relation \u0027products\u0027 is not found in App\\Models\\Category model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\CategoryController.php",
+                                "Line":  51
+                            },
+                            {
+                                "Message":  "Relation \u0027products\u0027 is not found in App\\Models\\Category model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\DashboardController.php",
+                                "Line":  53
+                            },
+                            {
+                                "Message":  "Access to an undefined property App\\Models\\Category::$products_count.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\DashboardController.php",
+                                "Line":  62
+                            },
+                            {
+                                "Message":  "Access to an undefined property App\\Models\\Category::$products.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\DashboardController.php",
+                                "Line":  63
+                            },
+                            {
+                                "Message":  "Access to an undefined property App\\Models\\Category::$products.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\DashboardController.php",
+                                "Line":  64
+                            },
+                            {
+                                "Message":  "Relation \u0027details\u0027 is not found in App\\Models\\StockOutOrder model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\DashboardController.php",
+                                "Line":  69
+                            },
+                            {
+                                "Message":  "Relation \u0027product\u0027 is not found in App\\Models\\StockIn model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\DashboardController.php",
+                                "Line":  76
+                            },
+                            {
+                                "Message":  "Relation \u0027adjustedByUser\u0027 is not found in App\\Models\\StockAdjustment model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\DashboardController.php",
+                                "Line":  82
+                            },
+                            {
+                                "Message":  "Relation \u0027product\u0027 is not found in App\\Models\\StockAdjustment model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\DashboardController.php",
+                                "Line":  82
+                            },
+                            {
+                                "Message":  "Relation \u0027stockOutOrder\u0027 is not found in App\\Models\\StockOutDetail model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\DashboardController.php",
+                                "Line":  94
+                            },
+                            {
+                                "Message":  "Relation \u0027creator\u0027 is not found in App\\Models\\DatabaseBackup model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\DatabaseManagementController.php",
+                                "Line":  88
+                            },
+                            {
+                                "Message":  "Relation \u0027product\u0027 is not found in App\\Models\\InventoryIssue model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\InventoryIssueController.php",
+                                "Line":  15
+                            },
+                            {
+                                "Message":  "Relation \u0027product\u0027 is not found in App\\Models\\InventoryIssue model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\InventoryIssueController.php",
+                                "Line":  78
+                            },
+                            {
+                                "Message":  "Relation \u0027category\u0027 is not found in App\\Models\\Product model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\InventoryReportController.php",
+                                "Line":  25
+                            },
+                            {
+                                "Message":  "Relation \u0027product\u0027 is not found in App\\Models\\StockIn model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\InventoryReportController.php",
+                                "Line":  58
+                            },
+                            {
+                                "Message":  "Relation \u0027product\u0027 is not found in App\\Models\\InventoryIssue model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\InventoryReportController.php",
+                                "Line":  66
+                            },
+                            {
+                                "Message":  "Relation \u0027product\u0027 is not found in App\\Models\\StockAdjustment model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\InventoryReportController.php",
+                                "Line":  74
+                            },
+                            {
+                                "Message":  "Access to an undefined property App\\Models\\StockIn::$product.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\InventoryReportController.php",
+                                "Line":  88
+                            },
+                            {
+                                "Message":  "Access to an undefined property App\\Models\\InventoryIssue::$product.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\InventoryReportController.php",
+                                "Line":  100
+                            },
+                            {
+                                "Message":  "Access to an undefined property App\\Models\\StockAdjustment::$product.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\InventoryReportController.php",
+                                "Line":  113
+                            },
+                            {
+                                "Message":  "Relation \u0027category\u0027 is not found in App\\Models\\Product model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\InventoryReportController.php",
+                                "Line":  139
+                            },
+                            {
+                                "Message":  "Relation \u0027products\u0027 is not found in App\\Models\\Category model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\InventoryReportController.php",
+                                "Line":  162
+                            },
+                            {
+                                "Message":  "Access to an undefined property App\\Models\\Category::$products.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\InventoryReportController.php",
+                                "Line":  169
+                            },
+                            {
+                                "Message":  "Access to an undefined property App\\Models\\Category::$products.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\InventoryReportController.php",
+                                "Line":  170
+                            },
+                            {
+                                "Message":  "Access to an undefined property App\\Models\\Category::$low_stock_count.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\InventoryReportController.php",
+                                "Line":  171
+                            },
+                            {
+                                "Message":  "Access to an undefined property App\\Models\\Category::$products.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\InventoryReportController.php",
+                                "Line":  171
+                            },
+                            {
+                                "Message":  "Relation \u0027category\u0027 is not found in App\\Models\\Product model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\InventoryReportController.php",
+                                "Line":  215
+                            },
+                            {
+                                "Message":  "Relation \u0027category\u0027 is not found in App\\Models\\Product model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\InventoryReportController.php",
+                                "Line":  232
+                            },
+                            {
+                                "Message":  "Relation \u0027category\u0027 is not found in App\\Models\\Product model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\ProductController.php",
+                                "Line":  17
+                            },
+                            {
+                                "Message":  "Relation \u0027supplier\u0027 is not found in App\\Models\\Product model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\ProductController.php",
+                                "Line":  17
+                            },
+                            {
+                                "Message":  "Relation \u0027category\u0027 is not found in App\\Models\\Product model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\ProductController.php",
+                                "Line":  117
+                            },
+                            {
+                                "Message":  "Relation \u0027inventoryIssues\u0027 is not found in App\\Models\\Product model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\ProductController.php",
+                                "Line":  117
+                            },
+                            {
+                                "Message":  "Relation \u0027stockAdjustments\u0027 is not found in App\\Models\\Product model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\ProductController.php",
+                                "Line":  117
+                            },
+                            {
+                                "Message":  "Relation \u0027stockIns\u0027 is not found in App\\Models\\Product model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\ProductController.php",
+                                "Line":  117
+                            },
+                            {
+                                "Message":  "Relation \u0027supplier\u0027 is not found in App\\Models\\Product model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\ProductController.php",
+                                "Line":  117
+                            },
+                            {
+                                "Message":  "Relation \u0027suppliers\u0027 is not found in App\\Models\\Product model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\ProductController.php",
+                                "Line":  117
+                            },
+                            {
+                                "Message":  "Relation \u0027suppliers\u0027 is not found in App\\Models\\Product model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\ProductController.php",
+                                "Line":  127
+                            },
+                            {
+                                "Message":  "Relation \u0027category\u0027 is not found in App\\Models\\Product model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\ProductController.php",
+                                "Line":  215
+                            },
+                            {
+                                "Message":  "Relation \u0027supplier\u0027 is not found in App\\Models\\Product model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\ProductController.php",
+                                "Line":  215
+                            },
+                            {
+                                "Message":  "Relation \u0027supplier\u0027 is not found in App\\Models\\PurchaseOrder model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\PurchaseOrderController.php",
+                                "Line":  19
+                            },
+                            {
+                                "Message":  "Relation \u0027products\u0027 is not found in App\\Models\\PurchaseOrder model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\PurchaseOrderController.php",
+                                "Line":  95
+                            },
+                            {
+                                "Message":  "Relation \u0027supplier\u0027 is not found in App\\Models\\PurchaseOrder model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\PurchaseOrderController.php",
+                                "Line":  95
+                            },
+                            {
+                                "Message":  "Access to an undefined property Illuminate\\Database\\Eloquent\\Model::$quantity.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\PurchaseOrderController.php",
+                                "Line":  189
+                            },
+                            {
+                                "Message":  "Access to an undefined property App\\Models\\PurchaseOrder::$orderDetails.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\PurchaseOrderController.php",
+                                "Line":  197
+                            },
+                            {
+                                "Message":  "Access to an undefined property Illuminate\\Database\\Eloquent\\Model::$status.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\PurchaseOrderReceivingController.php",
+                                "Line":  34
+                            },
+                            {
+                                "Message":  "Access to an undefined property Illuminate\\Database\\Eloquent\\Model::$status.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\PurchaseOrderReceivingController.php",
+                                "Line":  55
+                            },
+                            {
+                                "Message":  "Access to an undefined property App\\Models\\OrderDetail::$part.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\PurchaseOrderReceivingController.php",
+                                "Line":  72
+                            },
+                            {
+                                "Message":  "Access to an undefined property Illuminate\\Database\\Eloquent\\Model::$orderDetails.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\PurchaseOrderReceivingController.php",
+                                "Line":  81
+                            },
+                            {
+                                "Message":  "Access to an undefined property Illuminate\\Database\\Eloquent\\Model::$purchaseOrder.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\PurchaseOrderReceivingController.php",
+                                "Line":  127
+                            },
+                            {
+                                "Message":  "Access to an undefined property Illuminate\\Database\\Eloquent\\Model::$part.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\PurchaseOrderReceivingController.php",
+                                "Line":  130
+                            },
+                            {
+                                "Message":  "Relation \u0027orderDetails\u0027 is not found in App\\Models\\PurchaseOrder model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\PurchaseOrderReceivingController.php",
+                                "Line":  159
+                            },
+                            {
+                                "Message":  "Relation \u0027orderDetails\u0027 is not found in App\\Models\\PurchaseOrder model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\PurchaseOrderReceivingController.php",
+                                "Line":  165
+                            },
+                            {
+                                "Message":  "Relation \u0027supplier\u0027 is not found in App\\Models\\PurchaseOrder model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\PurchaseOrderReceivingController.php",
+                                "Line":  165
+                            },
+                            {
+                                "Message":  "Relation \u0027orderDetails\u0027 is not found in App\\Models\\PurchaseOrder model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\ReportController.php",
+                                "Line":  199
+                            },
+                            {
+                                "Message":  "Relation \u0027purchaseOrders\u0027 is not found in App\\Models\\Supplier model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\ReportController.php",
+                                "Line":  240
+                            },
+                            {
+                                "Message":  "Access to an undefined property App\\Models\\Supplier::$purchaseOrders.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\ReportController.php",
+                                "Line":  253
+                            },
+                            {
+                                "Message":  "Access to an undefined property App\\Models\\Supplier::$purchaseOrders.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\ReportController.php",
+                                "Line":  256
+                            },
+                            {
+                                "Message":  "Relation \u0027inventoryIssues\u0027 is not found in App\\Models\\Report model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\ReportViewController.php",
+                                "Line":  16
+                            },
+                            {
+                                "Message":  "Relation \u0027inventoryIssues\u0027 is not found in App\\Models\\Report model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\ReportViewController.php",
+                                "Line":  29
+                            },
+                            {
+                                "Message":  "Relation \u0027orderDetails\u0027 is not found in App\\Models\\PurchaseOrder model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\SearchController.php",
+                                "Line":  49
+                            },
+                            {
+                                "Message":  "Relation \u0027supplier\u0027 is not found in App\\Models\\PurchaseOrder model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\SearchController.php",
+                                "Line":  49
+                            },
+                            {
+                                "Message":  "Relation \u0027user\u0027 is not found in App\\Models\\LoginHistory model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\SecurityController.php",
+                                "Line":  26
+                            },
+                            {
+                                "Message":  "Relation \u0027user\u0027 is not found in App\\Models\\LoginHistory model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\SecurityController.php",
+                                "Line":  75
+                            },
+                            {
+                                "Message":  "Relation \u0027user\u0027 is not found in App\\Models\\LoginHistory model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\SecurityController.php",
+                                "Line":  378
+                            },
+                            {
+                                "Message":  "Relation \u0027user\u0027 is not found in App\\Models\\AuditLog model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\SecurityController.php",
+                                "Line":  396
+                            },
+                            {
+                                "Message":  "Relation \u0027adjustedByUser\u0027 is not found in App\\Models\\StockAdjustment model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\StockAdjustmentController.php",
+                                "Line":  16
+                            },
+                            {
+                                "Message":  "Relation \u0027product\u0027 is not found in App\\Models\\StockAdjustment model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\StockAdjustmentController.php",
+                                "Line":  16
+                            },
+                            {
+                                "Message":  "Relation \u0027adjustedByUser\u0027 is not found in App\\Models\\StockAdjustment model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\StockAdjustmentController.php",
+                                "Line":  111
+                            },
+                            {
+                                "Message":  "Relation \u0027product\u0027 is not found in App\\Models\\StockAdjustment model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\StockAdjustmentController.php",
+                                "Line":  111
+                            },
+                            {
+                                "Message":  "Access to an undefined property App\\Models\\StockAdjustment::$product.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\StockAdjustmentController.php",
+                                "Line":  122
+                            },
+                            {
+                                "Message":  "Relation \u0027product\u0027 is not found in App\\Models\\StockIn model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\StockInController.php",
+                                "Line":  18
+                            },
+                            {
+                                "Message":  "Relation \u0027suppliers\u0027 is not found in App\\Models\\Product model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\StockInController.php",
+                                "Line":  30
+                            },
+                            {
+                                "Message":  "Relation \u0027product\u0027 is not found in App\\Models\\StockIn model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\StockInController.php",
+                                "Line":  81
+                            },
+                            {
+                                "Message":  "Access to an undefined property App\\Models\\StockIn|Illuminate\\Database\\Eloquent\\Collection\u003cint, App\\Models\\StockIn\u003e::$product.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\StockInController.php",
+                                "Line":  97
+                            },
+                            {
+                                "Message":  "Relation \u0027issuedByUser\u0027 is not found in App\\Models\\StockOutOrder model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\StockOutOrderController.php",
+                                "Line":  19
+                            },
+                            {
+                                "Message":  "Relation \u0027details\u0027 is not found in App\\Models\\StockOutOrder model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\StockOutOrderController.php",
+                                "Line":  123
+                            },
+                            {
+                                "Message":  "Access to an undefined property App\\Models\\StockOutOrder::$details.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\StockOutOrderController.php",
+                                "Line":  161
+                            },
+                            {
+                                "Message":  "Relation \u0027suppliedProducts\u0027 is not found in App\\Models\\Supplier model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\SupplierController.php",
+                                "Line":  58
+                            },
+                            {
+                                "Message":  "Relation \u0027suppliers\u0027 is not found in App\\Models\\Product model.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\SupplierController.php",
+                                "Line":  125
+                            },
+                            {
+                                "Message":  "Access to an undefined property App\\Models\\Product|Illuminate\\Database\\Eloquent\\Collection\u003cint, App\\Models\\Product\u003e::$suppliers.",
+                                "File":  "D:\\newIT9al_Project\\IT16_Project\\app\\Http\\Controllers\\SupplierController.php",
+                                "Line":  127
+                            }
+                        ]
+}

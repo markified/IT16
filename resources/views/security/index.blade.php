@@ -243,7 +243,7 @@
                     </li>
                     <li class="mb-2">
                         <i class="fas fa-clock text-info me-1"></i>
-                        Lockout Duration: <strong>{{ $settings['login']['lockout_duration'] ?? 15 }} min</strong>
+                        Lockout Duration: <strong>{{ $settings['login']['lockout_duration'] ?? 900 }} seconds</strong>
                     </li>
                     <li class="mb-2">
                         <i class="fas fa-hourglass-half text-primary me-1"></i>

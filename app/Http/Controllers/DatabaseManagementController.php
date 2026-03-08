@@ -2,15 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\DatabaseBackup;
 use App\Models\AuditLog;
+use App\Models\DatabaseBackup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\Storage;
-use Symfony\Component\Process\Process;
-use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class DatabaseManagementController extends Controller
 {
@@ -20,23 +16,23 @@ class DatabaseManagementController extends Controller
     public function index()
     {
         // Allow superadmin and security roles (middleware already protects this route)
-        if (!Auth::user()->isAdmin() && !Auth::user()->isSecurity()) {
+        if (! Auth::user()->isAdmin() && ! Auth::user()->isSecurity()) {
             abort(403, 'Unauthorized access.');
         }
 
         // Get database name
         $databaseName = config('database.connections.mysql.database');
-        
+
         // Get table information
         $tables = $this->getTableStatistics();
-        
+
         // Get recent backups
         $recentBackups = DatabaseBackup::latest()->take(5)->get();
-        
+
         // Calculate total database size
         $totalSize = collect($tables)->sum('size_bytes');
         $totalSizeFormatted = $this->formatBytes($totalSize);
-        $totalRows = collect($tables)->sum(function($table) {
+        $totalRows = collect($tables)->sum(function ($table) {
             return (int) str_replace(',', '', $table['rows']);
         });
 
@@ -56,8 +52,8 @@ class DatabaseManagementController extends Controller
     protected function getTableStatistics()
     {
         $databaseName = config('database.connections.mysql.database');
-        
-        $tables = DB::select("
+
+        $tables = DB::select('
             SELECT 
                 table_name as `name`,
                 table_rows as `row_count`,
@@ -66,7 +62,7 @@ class DatabaseManagementController extends Controller
             FROM information_schema.tables 
             WHERE table_schema = ?
             ORDER BY table_name
-        ", [$databaseName]);
+        ', [$databaseName]);
 
         return collect($tables)->map(function ($table) {
             return [
@@ -85,7 +81,7 @@ class DatabaseManagementController extends Controller
     public function backups()
     {
         // Allow superadmin and security roles (middleware already protects this route)
-        if (!Auth::user()->isAdmin() && !Auth::user()->isSecurity()) {
+        if (! Auth::user()->isAdmin() && ! Auth::user()->isSecurity()) {
             abort(403, 'Unauthorized access.');
         }
 
@@ -102,7 +98,7 @@ class DatabaseManagementController extends Controller
     public function createBackup(Request $request)
     {
         // Allow superadmin and security roles (middleware already protects this route)
-        if (!Auth::user()->isAdmin() && !Auth::user()->isSecurity()) {
+        if (! Auth::user()->isAdmin() && ! Auth::user()->isSecurity()) {
             abort(403, 'Unauthorized access.');
         }
 
@@ -113,9 +109,9 @@ class DatabaseManagementController extends Controller
         $databaseName = config('database.connections.mysql.database');
         $filename = "backup_{$databaseName}_" . date('Y-m-d_His') . '.sql';
         $backupPath = storage_path('app/backups');
-        
+
         // Create backup directory if it doesn't exist
-        if (!is_dir($backupPath)) {
+        if (! is_dir($backupPath)) {
             mkdir($backupPath, 0755, true);
         }
 
@@ -146,7 +142,7 @@ class DatabaseManagementController extends Controller
             // Execute backup
             exec($command . ' 2>&1', $output, $returnCode);
 
-            if ($returnCode !== 0 || !file_exists($fullPath)) {
+            if ($returnCode !== 0 || ! file_exists($fullPath)) {
                 throw new \Exception('Backup command failed: ' . implode("\n", $output));
             }
 
@@ -169,7 +165,6 @@ class DatabaseManagementController extends Controller
 
             return redirect()->route('database.backups')
                 ->with('success', "Database backup created successfully: {$filename}");
-
         } catch (\Exception $e) {
             $backup->update([
                 'status' => 'failed',
@@ -187,13 +182,13 @@ class DatabaseManagementController extends Controller
     public function downloadBackup($id)
     {
         // Allow superadmin and security roles (middleware already protects this route)
-        if (!Auth::user()->isAdmin() && !Auth::user()->isSecurity()) {
+        if (! Auth::user()->isAdmin() && ! Auth::user()->isSecurity()) {
             abort(403, 'Unauthorized access.');
         }
 
         $backup = DatabaseBackup::findOrFail($id);
 
-        if (!$backup->fileExists()) {
+        if (! $backup->fileExists()) {
             return redirect()->route('database.backups')
                 ->with('error', 'Backup file not found.');
         }
@@ -207,15 +202,15 @@ class DatabaseManagementController extends Controller
     public function deleteBackup(Request $request, $id)
     {
         // Allow superadmin and security roles (middleware already protects this route)
-        if (!Auth::user()->isAdmin() && !Auth::user()->isSecurity()) {
+        if (! Auth::user()->isAdmin() && ! Auth::user()->isSecurity()) {
             abort(403, 'Unauthorized access.');
         }
 
         $backup = DatabaseBackup::findOrFail($id);
-        
+
         // Delete the file
         $backup->deleteFile();
-        
+
         // Log the action
         AuditLog::create([
             'user_id' => Auth::id(),
@@ -239,13 +234,13 @@ class DatabaseManagementController extends Controller
     public function showRestore($id)
     {
         // Allow superadmin and security roles (middleware already protects this route)
-        if (!Auth::user()->isAdmin() && !Auth::user()->isSecurity()) {
+        if (! Auth::user()->isAdmin() && ! Auth::user()->isSecurity()) {
             abort(403, 'Unauthorized access.');
         }
 
         $backup = DatabaseBackup::findOrFail($id);
 
-        if (!$backup->fileExists()) {
+        if (! $backup->fileExists()) {
             return redirect()->route('database.backups')
                 ->with('error', 'Backup file not found.');
         }
@@ -259,7 +254,7 @@ class DatabaseManagementController extends Controller
     public function restoreBackup(Request $request, $id)
     {
         // Allow superadmin and security roles (middleware already protects this route)
-        if (!Auth::user()->isAdmin() && !Auth::user()->isSecurity()) {
+        if (! Auth::user()->isAdmin() && ! Auth::user()->isSecurity()) {
             abort(403, 'Unauthorized access.');
         }
 
@@ -269,7 +264,7 @@ class DatabaseManagementController extends Controller
 
         $backup = DatabaseBackup::findOrFail($id);
 
-        if (!$backup->fileExists()) {
+        if (! $backup->fileExists()) {
             return redirect()->route('database.backups')
                 ->with('error', 'Backup file not found.');
         }
@@ -307,7 +302,6 @@ class DatabaseManagementController extends Controller
 
             return redirect()->route('database.index')
                 ->with('success', 'Database restored successfully from backup.');
-
         } catch (\Exception $e) {
             return redirect()->route('database.backups')
                 ->with('error', 'Restore failed: ' . $e->getMessage());
@@ -320,18 +314,18 @@ class DatabaseManagementController extends Controller
     public function optimize(Request $request)
     {
         // Allow superadmin and security roles (middleware already protects this route)
-        if (!Auth::user()->isAdmin() && !Auth::user()->isSecurity()) {
+        if (! Auth::user()->isAdmin() && ! Auth::user()->isSecurity()) {
             abort(403, 'Unauthorized access.');
         }
 
         try {
             $databaseName = config('database.connections.mysql.database');
-            
-            $tables = DB::select("
+
+            $tables = DB::select('
                 SELECT table_name 
                 FROM information_schema.tables 
                 WHERE table_schema = ?
-            ", [$databaseName]);
+            ', [$databaseName]);
 
             $optimized = [];
             foreach ($tables as $table) {
@@ -352,7 +346,6 @@ class DatabaseManagementController extends Controller
 
             return redirect()->route('database.index')
                 ->with('success', 'Successfully optimized ' . count($optimized) . ' tables.');
-
         } catch (\Exception $e) {
             return redirect()->route('database.index')
                 ->with('error', 'Optimization failed: ' . $e->getMessage());
@@ -365,7 +358,7 @@ class DatabaseManagementController extends Controller
     public function showTable($tableName)
     {
         // Allow superadmin and security roles (middleware already protects this route)
-        if (!Auth::user()->isAdmin() && !Auth::user()->isSecurity()) {
+        if (! Auth::user()->isAdmin() && ! Auth::user()->isSecurity()) {
             abort(403, 'Unauthorized access.');
         }
 
@@ -373,13 +366,13 @@ class DatabaseManagementController extends Controller
 
         // Get table structure
         $columns = DB::select("DESCRIBE `{$tableName}`");
-        
+
         // Get table indexes
         $indexes = DB::select("SHOW INDEX FROM `{$tableName}`");
-        
+
         // Get row count
         $rowCount = DB::table($tableName)->count();
-        
+
         // Get sample data (first 10 rows)
         $sampleData = DB::table($tableName)->limit(10)->get();
 
@@ -398,7 +391,7 @@ class DatabaseManagementController extends Controller
     public function exportTable(Request $request, $tableName)
     {
         // Allow superadmin and security roles (middleware already protects this route)
-        if (!Auth::user()->isAdmin() && !Auth::user()->isSecurity()) {
+        if (! Auth::user()->isAdmin() && ! Auth::user()->isSecurity()) {
             abort(403, 'Unauthorized access.');
         }
 
@@ -407,25 +400,25 @@ class DatabaseManagementController extends Controller
 
         if ($format === 'csv') {
             $filename = "{$tableName}_" . date('Y-m-d_His') . '.csv';
-            
+
             $headers = [
                 'Content-Type' => 'text/csv',
                 'Content-Disposition' => "attachment; filename=\"{$filename}\"",
             ];
 
-            $callback = function() use ($data) {
+            $callback = function () use ($data) {
                 $file = fopen('php://output', 'w');
-                
+
                 // Add headers
                 if ($data->count() > 0) {
                     fputcsv($file, array_keys((array) $data->first()));
                 }
-                
+
                 // Add rows
                 foreach ($data as $row) {
                     fputcsv($file, (array) $row);
                 }
-                
+
                 fclose($file);
             };
 
@@ -434,7 +427,7 @@ class DatabaseManagementController extends Controller
 
         if ($format === 'json') {
             $filename = "{$tableName}_" . date('Y-m-d_His') . '.json';
-            
+
             return response()->json($data)
                 ->header('Content-Disposition', "attachment; filename=\"{$filename}\"");
         }
@@ -448,11 +441,11 @@ class DatabaseManagementController extends Controller
     protected function formatBytes($bytes, $precision = 2)
     {
         $units = ['B', 'KB', 'MB', 'GB', 'TB'];
-        
+
         $bytes = max($bytes, 0);
         $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
         $pow = min($pow, count($units) - 1);
-        
+
         return round($bytes / (1024 ** $pow), $precision) . ' ' . $units[$pow];
     }
 }

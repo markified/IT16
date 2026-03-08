@@ -1,6 +1,5 @@
 @extends('layouts.app')
 
-@section('title', 'Database Backups')
 
 @section('contents')
 <div class="d-flex justify-content-between align-items-center mb-4">

@@ -32,9 +32,8 @@
                 <div class="col-md-2 mb-2">
                     <select name="adjustment_type" class="form-control">
                         <option value="">All Types</option>
-                        <option value="increase" {{ request('adjustment_type') == 'increase' ? 'selected' : '' }}>Increase</option>
-                        <option value="decrease" {{ request('adjustment_type') == 'decrease' ? 'selected' : '' }}>Decrease</option>
-                        <option value="correction" {{ request('adjustment_type') == 'correction' ? 'selected' : '' }}>Correction</option>
+                        <option value="add" {{ request('adjustment_type') == 'add' ? 'selected' : '' }}>Add Stock</option>
+                        <option value="remove" {{ request('adjustment_type') == 'remove' ? 'selected' : '' }}>Remove Stock</option>
                     </select>
                 </div>
                 <div class="col-md-2 mb-2">
@@ -89,12 +88,12 @@
                             </a>
                         </td>
                         <td>
-                            @if($adjustment->adjustment_type == 'increase')
-                            <span class="badge bg-success">Increase</span>
-                            @elseif($adjustment->adjustment_type == 'decrease')
-                            <span class="badge bg-danger">Decrease</span>
+                            @if($adjustment->adjustment_type == 'add' || $adjustment->adjustment_type == 'increase')
+                            <span class="badge bg-success">Add Stock</span>
+                            @elseif($adjustment->adjustment_type == 'remove' || $adjustment->adjustment_type == 'decrease')
+                            <span class="badge bg-danger">Remove Stock</span>
                             @else
-                            <span class="badge bg-info">Correction</span>
+                            <span class="badge bg-info">{{ ucfirst($adjustment->adjustment_type) }}</span>
                             @endif
                         </td>
                         <td>
@@ -114,7 +113,7 @@
                         <td>{{ $adjustment->adjustedByUser->name ?? 'N/A' }}</td>
                         <td>
                             <a href="{{ route('stock-adjustments.show', $adjustment->id) }}" class="btn btn-sm btn-info">
-                                <i class="fas fa-eye"></i>
+                                <i class="fas fa-list"></i>
                             </a>
                             <form action="{{ route('stock-adjustments.destroy', $adjustment->id) }}" method="POST" class="d-inline">
                                 @csrf

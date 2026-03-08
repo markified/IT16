@@ -12,10 +12,29 @@ class Supplier extends Model
     protected $fillable = [
         'name',
         'contact_number',
-        'email'
+        'email',
+        'is_archived',
     ];
 
+    protected $casts = [
+        'is_archived' => 'boolean',
+    ];
 
+    /**
+     * Scope to filter out archived suppliers.
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('is_archived', false);
+    }
+
+    /**
+     * Scope to get only archived suppliers.
+     */
+    public function scopeArchived($query)
+    {
+        return $query->where('is_archived', true);
+    }
 
     public function purchaseOrders()
     {

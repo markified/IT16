@@ -122,11 +122,11 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="lockout_duration" class="form-label">Lockout Duration (minutes)</label>
+                        <label for="lockout_duration" class="form-label">Lockout Duration (seconds)</label>
                         <input type="number" name="lockout_duration" id="lockout_duration" 
-                               class="form-control" min="5" max="60"
-                               value="{{ old('lockout_duration', $settings['login']['lockout_duration'] ?? 15) }}">
-                        <small class="text-muted">How long accounts stay locked (5-60 minutes)</small>
+                               class="form-control" min="30" max="3600"
+                               value="{{ old('lockout_duration', $settings['login']['lockout_duration'] ?? 900) }}">
+                        <small class="text-muted">How long accounts stay locked (30-3600 seconds)</small>
                     </div>
                 </div>
             </div>

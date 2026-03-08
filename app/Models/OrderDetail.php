@@ -17,7 +17,7 @@ class OrderDetail extends Model
         'product_name',
         'quantity_ordered',
         'price_per_item',
-        'order_date'
+        'order_date',
     ];
 
     protected $casts = [

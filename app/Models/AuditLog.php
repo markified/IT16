@@ -131,7 +131,7 @@ class AuditLog extends Model
 
     public function getActionBadgeAttribute()
     {
-        return match($this->action) {
+        return match ($this->action) {
             'created' => '<span class="badge bg-success">Created</span>',
             'updated' => '<span class="badge bg-info">Updated</span>',
             'deleted' => '<span class="badge bg-danger">Deleted</span>',

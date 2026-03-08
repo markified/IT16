@@ -13,6 +13,7 @@ class EmployeeController extends Controller
     public function index()
     {
         $employees = Employee::orderBy('created_at', 'DESC')->get();
+
         return view('employees.index', compact('employees'));
     }
 
@@ -34,9 +35,13 @@ class EmployeeController extends Controller
             'contact_number' => 'required|string|max:15',
         ]);
 
-        Employee::create($validated);
+        try {
+            Employee::create($validated);
 
-        return redirect()->route('employees')->with('success', 'Employee added successfully.');
+            return redirect()->route('employees')->with('success', 'Employee added successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('error', 'Failed to add employee. Please try again.');
+        }
     }
 
     /**
@@ -45,6 +50,7 @@ class EmployeeController extends Controller
     public function show(string $id)
     {
         $employee = Employee::findOrFail($id);
+
         return view('employees.show', compact('employee'));
     }
 
@@ -54,6 +60,7 @@ class EmployeeController extends Controller
     public function edit(string $id)
     {
         $employee = Employee::findOrFail($id);
+
         return view('employees.edit', compact('employee'));
     }
 
@@ -69,9 +76,13 @@ class EmployeeController extends Controller
             'contact_number' => 'required|string|max:15',
         ]);
 
-        $employee->update($validated);
+        try {
+            $employee->update($validated);
 
-        return redirect()->route('employees')->with('success', 'Employee updated successfully.');
+            return redirect()->route('employees')->with('success', 'Employee updated successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('error', 'Failed to update employee. Please try again.');
+        }
     }
 
     /**
@@ -79,9 +90,15 @@ class EmployeeController extends Controller
      */
     public function destroy(string $id)
     {
-        $employee = Employee::findOrFail($id);
-        $employee->delete();
+        try {
+            $employee = Employee::findOrFail($id);
+            $employee->delete();
 
-        return redirect()->route('employees')->with('success', 'Employee deleted successfully.');
+            return redirect()->route('employees')->with('success', 'Employee deleted successfully.');
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return redirect()->route('employees')->with('error', 'Employee not found.');
+        } catch (\Exception $e) {
+            return redirect()->route('employees')->with('error', 'Failed to delete employee. The employee may have associated records.');
+        }
     }
 }

@@ -6,14 +6,16 @@
         <h1 class="h3 mb-0 text-gray-800">PC Parts Inventory Dashboard</h1>
         <p class="mb-0 text-muted">Welcome back! Here's your inventory overview.</p>
     </div>
+    @if(!Auth::user()->isRegularAdmin())
     <div>
         <a href="{{ route('stock-in.create') }}" class="btn btn-success me-2">
             <i class="fas fa-plus"></i> Stock In
         </a>
-        <a href="{{ route('inventory-issues.create') }}" class="btn btn-danger">
+        <a href="{{ route('stock-out-orders.create') }}" class="btn btn-danger">
             <i class="fas fa-minus"></i> Stock Out
         </a>
     </div>
+    @endif
 </div>
 
 <!-- Stats Row 1 -->
@@ -138,8 +140,9 @@
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Stock Out Records</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalStockOut }}</div>
+                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Stock Out (Issued)</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalStockOutIssued }}</div>
+                        <small class="text-muted">{{ $totalStockOut }} total orders</small>
                     </div>
                     <div class="col-auto">
                         <i class="fas fa-arrow-up fa-2x text-gray-300"></i>
@@ -170,12 +173,15 @@
         <div class="card shadow mb-4 border-left-warning">
             <div class="card-header py-3 d-flex justify-content-between align-items-center">
                 <h6 class="m-0 font-weight-bold text-warning">Items Needing Attention</h6>
+                @if(!Auth::user()->isRegularAdmin())
                 <a href="{{ route('inventory-reports.low-stock') }}" class="btn btn-sm btn-warning">View All</a>
+                @endif
             </div>
             <div class="card-body">
                 @if($topLowStock->count() > 0)
                 <div class="list-group list-group-flush">
                     @foreach($topLowStock as $item)
+                    @if(!Auth::user()->isRegularAdmin())
                     <a href="{{ route('products.show', $item->id) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                         <div>
                             <strong>{{ Str::limit($item->name, 25) }}</strong>
@@ -185,6 +191,17 @@
                             {{ $item->quantity }}
                         </span>
                     </a>
+                    @else
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ Str::limit($item->name, 25) }}</strong>
+                            <br><small class="text-muted">Min: {{ $item->min_stock_level }}</small>
+                        </div>
+                        <span class="badge {{ $item->quantity == 0 ? 'bg-danger' : 'bg-warning' }} rounded-pill">
+                            {{ $item->quantity }}
+                        </span>
+                    </div>
+                    @endif
                     @endforeach
                 </div>
                 @else
@@ -204,7 +221,9 @@
         <div class="card shadow mb-4">
             <div class="card-header py-3 d-flex justify-content-between align-items-center">
                 <h6 class="m-0 font-weight-bold text-success">Recent Stock In</h6>
+                @if(!Auth::user()->isRegularAdmin())
                 <a href="{{ route('stock-in.index') }}" class="btn btn-sm btn-success">View All</a>
+                @endif
             </div>
             <div class="card-body">
                 @if($recentStockIn->count() > 0)
@@ -239,8 +258,10 @@
     <div class="col-lg-6 mb-4">
         <div class="card shadow mb-4">
             <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                <h6 class="m-0 font-weight-bold text-danger">Recent Stock Out</h6>
-                <a href="{{ route('inventory-issues') }}" class="btn btn-sm btn-danger">View All</a>
+                <h6 class="m-0 font-weight-bold text-danger">Recent Stock Out (Issued)</h6>
+                @if(!Auth::user()->isRegularAdmin())
+                <a href="{{ route('stock-out-orders.index') }}" class="btn btn-sm btn-danger">View All</a>
+                @endif
             </div>
             <div class="card-body">
                 @if($recentStockOut->count() > 0)
@@ -248,26 +269,28 @@
                     <table class="table table-sm table-hover">
                         <thead>
                             <tr>
+                                <th>Order #</th>
                                 <th>Date</th>
-                                <th>Product</th>
                                 <th>Recipient</th>
-                                <th class="text-end">Qty</th>
+                                <th class="text-center">Items</th>
+                                <th class="text-end">Total Qty</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($recentStockOut as $activity)
+                            @foreach($recentStockOut as $order)
                             <tr>
-                                <td><small>{{ $activity->issue_date }}</small></td>
-                                <td>{{ Str::limit($activity->product->name, 15) }}</td>
-                                <td>{{ Str::limit($activity->recipient ?? 'N/A', 10) }}</td>
-                                <td class="text-end"><span class="text-danger">-{{ $activity->quantity_issued }}</span></td>
+                                <td><a href="{{ route('stock-out-orders.show', $order->id) }}"><code>{{ $order->order_number }}</code></a></td>
+                                <td><small>{{ $order->issue_date->format('M d, Y') }}</small></td>
+                                <td>{{ Str::limit($order->recipient ?? 'N/A', 12) }}</td>
+                                <td class="text-center">{{ $order->details->count() }}</td>
+                                <td class="text-end"><span class="text-danger">-{{ $order->details->sum('quantity_issued') }}</span></td>
                             </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
                 @else
-                <p class="text-muted mb-0">No recent stock out records.</p>
+                <p class="text-muted mb-0">No issued stock out orders yet.</p>
                 @endif
             </div>
         </div>
@@ -280,7 +303,9 @@
         <div class="card shadow mb-4">
             <div class="card-header py-3 d-flex justify-content-between align-items-center">
                 <h6 class="m-0 font-weight-bold text-primary">Category Overview</h6>
+                @if(!Auth::user()->isRegularAdmin())
                 <a href="{{ route('inventory-reports.category') }}" class="btn btn-sm btn-primary">Full Report</a>
+                @endif
             </div>
             <div class="card-body">
                 <div class="row">
@@ -294,7 +319,11 @@
                     </div>
                     @empty
                     <div class="col-12 text-center text-muted">
+                        @if(!Auth::user()->isRegularAdmin())
                         <p>No categories defined. <a href="{{ route('categories.create') }}">Create one</a></p>
+                        @else
+                        <p>No categories defined.</p>
+                        @endif
                     </div>
                     @endforelse
                 </div>

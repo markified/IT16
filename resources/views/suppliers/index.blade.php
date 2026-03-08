@@ -4,9 +4,14 @@
 <div class="d-flex align-items-center justify-content-between">
     <h1 class="mb-0">Suppliers</h1>
   
-    <button type="button" class="btn btn-primary" onclick="$('#addSupplierModal').modal('show')">
-        Add New Supplier
-    </button>
+    <div class="d-flex gap-2">
+        <a href="{{ route('suppliers.archived') }}" class="btn btn-secondary">
+            <i class="fas fa-archive me-1"></i> View Archived
+        </a>
+        <button type="button" class="btn btn-primary" onclick="$('#addSupplierModal').modal('show')">
+            Add New Supplier
+        </button>
+    </div>
 </div>
 <hr />
 @if(Session::has('success'))
@@ -40,15 +45,19 @@
             <td class="align-middle">{{ $supplier->contact_number }}</td>
             <td class="align-middle">{{ $supplier->email }}</td>
             <td class="align-middle">
-                <div class="btn-group" role="group">
-                    <a href="{{ route('suppliers.show', $supplier->id) }}" class="btn btn-info">Details</a>
-                    <button type="button" class="btn btn-warning" onclick="$('#editSupplierModal{{ $supplier->id }}').modal('show')">
-                        Edit
+                <div class="btn-group btn-group-sm" role="group">
+                    <a href="{{ route('suppliers.show', $supplier->id) }}" class="btn btn-info" title="View Details">
+                        <i class="fas fa-list"></i>
+                    </a>
+                    <button type="button" class="btn btn-warning" title="Edit" onclick="$('#editSupplierModal{{ $supplier->id }}').modal('show')">
+                        <i class="fas fa-edit"></i>
                     </button>
-                    <form action="{{ route('suppliers.destroy', $supplier->id) }}" method="POST" class="btn btn-danger p-0">
+                    <form action="{{ route('suppliers.destroy', $supplier->id) }}" method="POST" class="d-inline">
                         @csrf
                         @method('DELETE')
-                        <button type="button" class="btn btn-danger m-0" data-confirm-delete="Are you sure you want to delete this supplier? This action cannot be undone.">Delete</button>
+                        <button type="button" class="btn btn-secondary" title="Archive" data-confirm-delete="Are you sure you want to archive this supplier?">
+                            <i class="fas fa-archive"></i>
+                        </button>
                     </form>
                 </div>
             </td>

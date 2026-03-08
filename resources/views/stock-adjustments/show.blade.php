@@ -40,12 +40,12 @@
                     <tr>
                         <td><strong>Adjustment Type:</strong></td>
                         <td>
-                            @if($adjustment->adjustment_type == 'increase')
-                            <span class="badge bg-success">Increase</span>
-                            @elseif($adjustment->adjustment_type == 'decrease')
-                            <span class="badge bg-danger">Decrease</span>
+                            @if($adjustment->adjustment_type == 'add' || $adjustment->adjustment_type == 'increase')
+                            <span class="badge bg-success">Add Stock</span>
+                            @elseif($adjustment->adjustment_type == 'remove' || $adjustment->adjustment_type == 'decrease')
+                            <span class="badge bg-danger">Remove Stock</span>
                             @else
-                            <span class="badge bg-info">Correction</span>
+                            <span class="badge bg-info">{{ ucfirst($adjustment->adjustment_type) }}</span>
                             @endif
                         </td>
                     </tr>

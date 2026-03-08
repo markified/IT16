@@ -7,7 +7,6 @@
     <h1 class="mb-0">PC Part Details</h1>
     <div class="ms-auto">
         <a href="{{ route('products') }}" class="btn btn-secondary">Back</a>
-        <a href="{{ route('products.edit', $product->id) }}" class="btn btn-warning">Edit</a>
     </div>
 </div>
 <hr />

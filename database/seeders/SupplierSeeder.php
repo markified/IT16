@@ -62,7 +62,7 @@ class SupplierSeeder extends Seeder
                 'name' => 'Tech Innovations Supply',
                 'contact_number' => '800-555-0123',
                 'email' => 'innovations@techsupply.com',
-            ]
+            ],
         ];
 
         foreach ($suppliers as $supplier) {

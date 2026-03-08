@@ -2,8 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\PurchaseOrder;
-use App\Models\Report;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -17,7 +15,7 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        if (!User::where('email', 'balmesmarkclarence@gmail.com')->exists()) {
+        if (! User::where('email', 'balmesmarkclarence@gmail.com')->exists()) {
             User::create([
                 'name' => 'Superadmin',
                 'email' => 'balmesmarkclarence@gmail.com',
@@ -28,7 +26,7 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Admin',
                 'email' => 'admin@gmail.com',
                 'password' => bcrypt('Admin01'),
-                'role' => 'superadmin',
+                'role' => 'admin',
             ]);
         }
 

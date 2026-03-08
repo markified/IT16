@@ -27,7 +27,7 @@ class SecuritySetting extends Model
             return self::where('key', $key)->first();
         });
 
-        if (!$setting) {
+        if (! $setting) {
             return $default;
         }
 
@@ -64,11 +64,11 @@ class SecuritySetting extends Model
 
         return Cache::remember($cacheKey, 3600, function () use ($group) {
             $query = self::query();
-            
+
             if ($group) {
                 $query->where('group', $group);
             }
-            
+
             return $query->get()->mapWithKeys(function ($setting) {
                 return [$setting->key => self::castValue($setting->value, $setting->type)];
             })->toArray();
@@ -76,11 +76,22 @@ class SecuritySetting extends Model
     }
 
     /**
-     * Get settings grouped by their group.
+     * Get settings grouped by their group with key-value format.
      */
     public static function getGroupedSettings()
     {
-        return self::all()->groupBy('group');
+        $settings = self::all();
+        $grouped = [];
+
+        foreach ($settings as $setting) {
+            $group = $setting->group ?? 'general';
+            if (! isset($grouped[$group])) {
+                $grouped[$group] = [];
+            }
+            $grouped[$group][$setting->key] = self::castValue($setting->value, $setting->type);
+        }
+
+        return $grouped;
     }
 
     /**
@@ -110,7 +121,7 @@ class SecuritySetting extends Model
             Cache::forget("security_setting_{$setting->key}");
         }
         Cache::forget('security_settings_all');
-        
+
         $groups = self::distinct()->pluck('group');
         foreach ($groups as $group) {
             Cache::forget("security_settings_group_{$group}");

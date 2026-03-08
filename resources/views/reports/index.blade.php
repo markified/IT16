@@ -38,7 +38,7 @@
                                     <td>
                                         <div class="btn-group" role="group">
                                             <a href="{{ route('reports.show', $report->id) }}" class="btn btn-sm btn-info">
-                                                <i class="fas fa-eye"></i> View
+                                                <i class="fas fa-list"></i> View
                                             </a>
                                             <a href="{{ route('reports.edit', $report->id) }}" class="btn btn-sm btn-warning">
                                                 <i class="fas fa-edit"></i> Edit

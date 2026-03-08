@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Report;
-use Illuminate\Http\Request;
 
 class ReportViewController extends Controller
 {
@@ -15,6 +14,7 @@ class ReportViewController extends Controller
     public function index()
     {
         $reports = Report::with(['inventoryIssues.employee'])->get();
+
         return view('reports.view', compact('reports'));
     }
 
@@ -27,6 +27,7 @@ class ReportViewController extends Controller
     public function show($id)
     {
         $report = Report::with(['inventoryIssues.employee', 'suppliers'])->findOrFail($id);
+
         return view('reports.show', compact('report'));
     }
 }

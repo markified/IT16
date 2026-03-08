@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Report;
-use App\Models\Employee;
 use App\Models\Product;
 use App\Models\PurchaseOrder;
+use App\Models\Report;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,6 +20,7 @@ class ReportController extends Controller
     public function index()
     {
         $reports = Report::orderBy('created_at', 'desc')->paginate(10);
+
         return view('reports.index', compact('reports'));
     }
 
@@ -33,13 +33,13 @@ class ReportController extends Controller
     {
         $reportTypes = ['inventory', 'purchase_order', 'issue', 'supplier'];
         $suppliers = Supplier::all();
+
         return view('reports.create', compact('reportTypes', 'suppliers'));
     }
 
     /**
      * Store a newly created report in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -51,34 +51,38 @@ class ReportController extends Controller
             'end_date' => 'required|date|after_or_equal:start_date',
         ]);
 
-        $reportData = $this->generateReportData(
-            $request->report_type,
-            $request->start_date,
-            $request->end_date,
-            $request->all()
-        );
+        try {
+            $reportData = $this->generateReportData(
+                $request->report_type,
+                $request->start_date,
+                $request->end_date,
+                $request->all()
+            );
 
-        $report = new Report([
-            'title' => $request->title,
-            'report_type' => $request->report_type,
-            'parameters' => $request->except(['_token', 'title', 'report_type', 'start_date', 'end_date']),
-            'data' => $reportData,
-            'generated_by' => Auth::id(),
-            'report_date' => now(),
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date,
-        ]);
+            $report = new Report([
+                'title' => $request->title,
+                'report_type' => $request->report_type,
+                'parameters' => $request->except(['_token', 'title', 'report_type', 'start_date', 'end_date']),
+                'data' => $reportData,
+                'generated_by' => Auth::id(),
+                'report_date' => now(),
+                'start_date' => $request->start_date,
+                'end_date' => $request->end_date,
+            ]);
 
-        $report->save();
+            $report->save();
 
-        return redirect()->route('reports.show', $report->id)
-            ->with('success', 'Report created successfully.');
+            return redirect()->route('reports.show', $report->id)
+                ->with('success', 'Report created successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()
+                ->with('error', 'Failed to create report. Please try again.');
+        }
     }
 
     /**
      * Display the specified report.
      *
-     * @param  \App\Models\Report  $report
      * @return \Illuminate\Http\Response
      */
     public function show(Report $report)
@@ -89,21 +93,19 @@ class ReportController extends Controller
     /**
      * Show the form for editing the specified report.
      *
-     * @param  \App\Models\Report  $report
      * @return \Illuminate\Http\Response
      */
     public function edit(Report $report)
     {
         $reportTypes = ['inventory', 'purchase_order', 'issue', 'supplier'];
         $suppliers = Supplier::all();
+
         return view('reports.edit', compact('report', 'reportTypes', 'suppliers'));
     }
 
     /**
      * Update the specified report in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Report  $report
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Report $report)
@@ -115,47 +117,57 @@ class ReportController extends Controller
             'end_date' => 'required|date|after_or_equal:start_date',
         ]);
 
-        $reportData = $this->generateReportData(
-            $request->report_type,
-            $request->start_date,
-            $request->end_date,
-            $request->all()
-        );
+        try {
+            $reportData = $this->generateReportData(
+                $request->report_type,
+                $request->start_date,
+                $request->end_date,
+                $request->all()
+            );
 
-        $report->update([
-            'title' => $request->title,
-            'report_type' => $request->report_type,
-            'parameters' => $request->except(['_token', '_method', 'title', 'report_type', 'start_date', 'end_date']),
-            'data' => $reportData,
-            'report_date' => now(),
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date,
-        ]);
+            $report->update([
+                'title' => $request->title,
+                'report_type' => $request->report_type,
+                'parameters' => $request->except(['_token', '_method', 'title', 'report_type', 'start_date', 'end_date']),
+                'data' => $reportData,
+                'report_date' => now(),
+                'start_date' => $request->start_date,
+                'end_date' => $request->end_date,
+            ]);
 
-        return redirect()->route('reports.show', $report->id)
-            ->with('success', 'Report updated successfully.');
+            return redirect()->route('reports.show', $report->id)
+                ->with('success', 'Report updated successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()
+                ->with('error', 'Failed to update report. Please try again.');
+        }
     }
 
     /**
      * Remove the specified report from storage.
      *
-     * @param  \App\Models\Report  $report
      * @return \Illuminate\Http\Response
      */
     public function destroy(Report $report)
     {
-        $report->delete();
-        return redirect()->route('reports.index')
-            ->with('success', 'Report deleted successfully.');
+        try {
+            $report->delete();
+
+            return redirect()->route('reports.index')
+                ->with('success', 'Report deleted successfully.');
+        } catch (\Exception $e) {
+            return redirect()->route('reports.index')
+                ->with('error', 'Failed to delete report. Please try again.');
+        }
     }
 
     /**
      * Generate report data based on type, date range, and optional parameters.
      *
-     * @param string $reportType
-     * @param string $startDate
-     * @param string $endDate
-     * @param array $parameters
+     * @param  string  $reportType
+     * @param  string  $startDate
+     * @param  string  $endDate
+     * @param  array  $parameters
      * @return array
      */
     private function generateReportData($reportType, $startDate, $endDate, $parameters)
@@ -166,7 +178,7 @@ class ReportController extends Controller
             case 'inventory':
                 $query = Product::query();
 
-                if (!empty($parameters['type'])) {
+                if (! empty($parameters['type'])) {
                     $query->where('type', $parameters['type']);
                 }
 
@@ -187,11 +199,11 @@ class ReportController extends Controller
                 $query = PurchaseOrder::with(['supplier', 'orderDetails.product'])
                     ->whereBetween('created_at', [$startDate, $endDate]);
 
-                if (!empty($parameters['status'])) {
+                if (! empty($parameters['status'])) {
                     $query->where('status', $parameters['status']);
                 }
 
-                if (!empty($parameters['supplier_id'])) {
+                if (! empty($parameters['supplier_id'])) {
                     $query->where('supplier_id', $parameters['supplier_id']);
                 }
 
@@ -229,7 +241,7 @@ class ReportController extends Controller
                     $q->whereBetween('created_at', [$startDate, $endDate]);
                 }]);
 
-                if (!empty($parameters['supplier_id'])) {
+                if (! empty($parameters['supplier_id'])) {
                     $query->where('id', $parameters['supplier_id']);
                 }
 
@@ -253,7 +265,6 @@ class ReportController extends Controller
     /**
      * Download report as PDF
      *
-     * @param  \App\Models\Report  $report
      * @return \Illuminate\Http\Response
      */
     public function downloadPdf(Report $report)

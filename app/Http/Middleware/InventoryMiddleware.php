@@ -15,13 +15,13 @@ class InventoryMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             return redirect()->route('login');
         }
 
         $allowedRoles = ['superadmin', 'inventory'];
-        
-        if (!in_array(auth()->user()->role, $allowedRoles)) {
+
+        if (! in_array(auth()->user()->role, $allowedRoles)) {
             abort(403, 'Access denied. Only inventory managers and administrators can access this page.');
         }
 

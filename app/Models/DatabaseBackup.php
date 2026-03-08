@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
 
 class DatabaseBackup extends Model
 {
@@ -55,7 +54,7 @@ class DatabaseBackup extends Model
     public function getFormattedSizeAttribute()
     {
         $bytes = $this->size;
-        
+
         if ($bytes >= 1073741824) {
             return number_format($bytes / 1073741824, 2) . ' GB';
         } elseif ($bytes >= 1048576) {
@@ -111,6 +110,7 @@ class DatabaseBackup extends Model
         if ($this->fileExists()) {
             return unlink($this->path);
         }
+
         return false;
     }
 }

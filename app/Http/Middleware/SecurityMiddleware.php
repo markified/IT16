@@ -15,13 +15,13 @@ class SecurityMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             return redirect()->route('login');
         }
 
         $allowedRoles = ['superadmin', 'security'];
-        
-        if (!in_array(auth()->user()->role, $allowedRoles)) {
+
+        if (! in_array(auth()->user()->role, $allowedRoles)) {
             abort(403, 'Access denied. Only security personnel and administrators can access this page.');
         }
 

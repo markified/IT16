@@ -6,9 +6,14 @@
         <h1 class="h3 mb-0 text-gray-800">PC Parts Inventory</h1>
         <p class="mb-0 text-muted">{{ $products->count() }} products in database</p>
     </div>
-    <a href="{{ route('products.create') }}" class="btn btn-primary">
-        <i class="fas fa-plus me-1"></i> Add New PC Part
-    </a>
+    <div class="d-flex gap-2">
+        <a href="{{ route('products.archived') }}" class="btn btn-secondary">
+            <i class="fas fa-archive me-1"></i> View Archived
+        </a>
+        <a href="{{ route('products.create') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i> Add New PC Part
+        </a>
+    </div>
 </div>
 
 @if(Session::has('success'))
@@ -115,16 +120,13 @@
                         <td>
                             <div class="btn-group btn-group-sm">
                                 <a href="{{ route('products.show', $product->id) }}" class="btn btn-info" title="View">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                                <a href="{{ route('products.edit', $product->id) }}" class="btn btn-warning" title="Edit">
-                                    <i class="fas fa-edit"></i>
+                                    <i class="fas fa-list"></i>
                                 </a>
                                 <form action="{{ route('products.destroy', $product->id) }}" method="POST" class="d-inline">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="button" class="btn btn-danger" title="Delete" data-confirm-delete="Are you sure you want to delete this PC part? This action cannot be undone.">
-                                        <i class="fas fa-trash"></i>
+                                    <button type="button" class="btn btn-warning" title="Archive" data-confirm-delete="Are you sure you want to archive this PC part?">
+                                        <i class="fas fa-archive"></i>
                                     </button>
                                 </form>
                             </div>

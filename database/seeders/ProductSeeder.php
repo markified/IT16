@@ -37,7 +37,7 @@ class ProductSeeder extends Seeder
                 'serial_number' => 'INTEL-I7-12700K-2025',
                 'specifications' => 'Base Frequency: 3.6 GHz, Max Turbo: 5.0 GHz, TDP: 125W, Socket: LGA1700',
                 'location' => 'Shelf A1',
-                'status' => 'available'
+                'status' => 'available',
             ],
             [
                 'name' => 'AMD Ryzen 9 5950X',
@@ -53,7 +53,7 @@ class ProductSeeder extends Seeder
                 'serial_number' => 'AMD-R9-5950X-2025',
                 'specifications' => 'Base Frequency: 3.4 GHz, Max Boost: 4.9 GHz, TDP: 105W, Socket: AM4',
                 'location' => 'Shelf A1',
-                'status' => 'available'
+                'status' => 'available',
             ],
             [
                 'name' => 'Intel Core i9-13900K',
@@ -69,7 +69,7 @@ class ProductSeeder extends Seeder
                 'serial_number' => 'INTEL-I9-13900K-2025',
                 'specifications' => 'Base Frequency: 3.0 GHz, Max Turbo: 5.8 GHz, TDP: 125W, Socket: LGA1700',
                 'location' => 'Shelf A1',
-                'status' => 'available'
+                'status' => 'available',
             ],
             // Storage
             [
@@ -86,7 +86,7 @@ class ProductSeeder extends Seeder
                 'serial_number' => 'SAMSUNG-980PRO-1TB',
                 'specifications' => 'Interface: PCIe Gen 4.0 x4, NVMe 1.3c, Sequential Read: 7,000 MB/s, Sequential Write: 5,000 MB/s',
                 'location' => 'Shelf B2',
-                'status' => 'available'
+                'status' => 'available',
             ],
             [
                 'name' => 'Crucial MX500 2TB SSD',
@@ -102,7 +102,7 @@ class ProductSeeder extends Seeder
                 'serial_number' => 'CRUCIAL-MX500-2TB',
                 'specifications' => 'Interface: SATA 6.0Gb/s, Sequential Read: 560 MB/s, Sequential Write: 510 MB/s',
                 'location' => 'Shelf B2',
-                'status' => 'available'
+                'status' => 'available',
             ],
             [
                 'name' => 'Seagate IronWolf 8TB NAS HDD',
@@ -118,7 +118,7 @@ class ProductSeeder extends Seeder
                 'serial_number' => 'SEAGATE-IRONWOLF-8TB',
                 'specifications' => 'Capacity: 8TB, Interface: SATA 6Gb/s, RPM: 7200, Cache: 256MB, Workload Rate: 180TB/year',
                 'location' => 'Shelf B3',
-                'status' => 'available'
+                'status' => 'available',
             ],
             [
                 'name' => 'WD Black SN850X 4TB',
@@ -134,7 +134,7 @@ class ProductSeeder extends Seeder
                 'serial_number' => 'WD-SN850X-4TB-HS',
                 'specifications' => 'Capacity: 4TB, Interface: PCIe Gen4 x4, Sequential Read: 7,300 MB/s, Sequential Write: 6,600 MB/s',
                 'location' => 'Shelf B2',
-                'status' => 'available'
+                'status' => 'available',
             ],
             [
                 'name' => 'Sabrent Rocket Q 8TB',
@@ -150,7 +150,7 @@ class ProductSeeder extends Seeder
                 'serial_number' => 'SABRENT-RQ-8TB-2025',
                 'specifications' => 'Capacity: 8TB, Interface: PCIe 3.0 x4, Sequential Read: 3,300 MB/s, Sequential Write: 2,900 MB/s',
                 'location' => 'Shelf B2',
-                'status' => 'available'
+                'status' => 'available',
             ],
             // Memory/RAM
             [
@@ -167,7 +167,7 @@ class ProductSeeder extends Seeder
                 'serial_number' => 'CORSAIR-VRGBP-32GB',
                 'specifications' => 'Capacity: 32GB (2x16GB), Speed: 3600MHz, Timing: 18-22-22-42, Voltage: 1.35V',
                 'location' => 'Shelf C1',
-                'status' => 'available'
+                'status' => 'available',
             ],
             [
                 'name' => 'G.SKILL Trident Z Neo 64GB',
@@ -183,7 +183,7 @@ class ProductSeeder extends Seeder
                 'serial_number' => 'GSKILL-TZNEO-64GB',
                 'specifications' => 'Capacity: 64GB (2x32GB), Speed: 3600MHz, Timing: 16-19-19-39, Voltage: 1.35V',
                 'location' => 'Shelf C1',
-                'status' => 'available'
+                'status' => 'available',
             ],
             [
                 'name' => 'Kingston Fury Beast DDR5 32GB',
@@ -199,7 +199,7 @@ class ProductSeeder extends Seeder
                 'serial_number' => 'KINGSTON-FB-DDR5-32',
                 'specifications' => 'Capacity: 32GB (2x16GB), Speed: 5200MHz, Timing: CL40, Voltage: 1.25V',
                 'location' => 'Shelf C1',
-                'status' => 'available'
+                'status' => 'available',
             ],
             // GPUs
             [
@@ -216,7 +216,7 @@ class ProductSeeder extends Seeder
                 'serial_number' => 'NVIDIA-RTX4080-16G',
                 'specifications' => 'CUDA Cores: 9728, Boost Clock: 2.51 GHz, Memory: 16GB GDDR6X, Memory Interface: 256-bit',
                 'location' => 'Shelf D1',
-                'status' => 'available'
+                'status' => 'available',
             ],
             [
                 'name' => 'AMD Radeon RX 7900 XT',
@@ -232,7 +232,7 @@ class ProductSeeder extends Seeder
                 'serial_number' => 'AMD-RX7900XT-20G',
                 'specifications' => 'Stream Processors: 10752, Game Clock: 2000 MHz, Boost Clock: 2400 MHz, Memory: 20GB GDDR6',
                 'location' => 'Shelf D1',
-                'status' => 'available'
+                'status' => 'available',
             ],
             // Motherboards
             [
@@ -249,7 +249,7 @@ class ProductSeeder extends Seeder
                 'serial_number' => 'ASUS-ROGZ690E-2025',
                 'specifications' => 'Socket: LGA1700, Chipset: Intel Z690, Memory: 4x DIMM, Max 128GB, DDR5, WiFi 6E, PCIe 5.0',
                 'location' => 'Shelf E1',
-                'status' => 'available'
+                'status' => 'available',
             ],
             [
                 'name' => 'MSI MPG B550 GAMING EDGE',
@@ -265,7 +265,7 @@ class ProductSeeder extends Seeder
                 'serial_number' => 'MSI-B550EDGE-2025',
                 'specifications' => 'Socket: AM4, Chipset: AMD B550, Memory: 4x DIMM, Max 128GB, DDR4, WiFi 6, PCIe 4.0',
                 'location' => 'Shelf E1',
-                'status' => 'available'
+                'status' => 'available',
             ],
             // Power Supplies
             [
@@ -282,7 +282,7 @@ class ProductSeeder extends Seeder
                 'serial_number' => 'CORSAIR-RM850X-2025',
                 'specifications' => 'Wattage: 850W, Efficiency: 80+ Gold, Modular: Fully Modular, Fan Size: 135mm',
                 'location' => 'Shelf F1',
-                'status' => 'available'
+                'status' => 'available',
             ],
             [
                 'name' => 'EVGA SuperNOVA 1000 G5',
@@ -298,7 +298,7 @@ class ProductSeeder extends Seeder
                 'serial_number' => 'EVGA-1000G5-2025',
                 'specifications' => 'Wattage: 1000W, Efficiency: 80+ Gold, Modular: Fully Modular, Fan Size: 135mm',
                 'location' => 'Shelf F1',
-                'status' => 'available'
+                'status' => 'available',
             ],
             // Cooling
             [
@@ -315,7 +315,7 @@ class ProductSeeder extends Seeder
                 'serial_number' => 'NOCTUA-NHD15-2025',
                 'specifications' => 'Height: 165mm, Fan Speed: 300-1500 RPM, Noise Level: 24.6 dB(A), Socket Compatibility: Intel & AMD',
                 'location' => 'Shelf G1',
-                'status' => 'available'
+                'status' => 'available',
             ],
             [
                 'name' => 'NZXT Kraken X73 RGB AIO',
@@ -331,7 +331,7 @@ class ProductSeeder extends Seeder
                 'serial_number' => 'NZXT-X73RGB-2025',
                 'specifications' => 'Radiator Size: 360mm, Fan Speed: 500-2000 RPM, Noise Level: 21-36 dB(A), Socket Compatibility: Intel & AMD',
                 'location' => 'Shelf G1',
-                'status' => 'available'
+                'status' => 'available',
             ],
             // Cases
             [
@@ -348,7 +348,7 @@ class ProductSeeder extends Seeder
                 'serial_number' => 'LIANLI-O11D-EVO-W',
                 'specifications' => 'Form Factor: Mid Tower, Motherboard Support: E-ATX/ATX/Micro-ATX/Mini-ITX, Dimensions: 462mm x 285mm x 459mm',
                 'location' => 'Shelf H1',
-                'status' => 'available'
+                'status' => 'available',
             ],
             [
                 'name' => 'Fractal Design Meshify 2',
@@ -364,7 +364,7 @@ class ProductSeeder extends Seeder
                 'serial_number' => 'FRACTAL-MESHIFY2-BLK',
                 'specifications' => 'Form Factor: Mid Tower, Motherboard Support: E-ATX/ATX/Micro-ATX/Mini-ITX, Dimensions: 474mm x 230mm x 542mm',
                 'location' => 'Shelf H1',
-                'status' => 'available'
+                'status' => 'available',
             ],
             // Monitors
             [
@@ -381,7 +381,7 @@ class ProductSeeder extends Seeder
                 'serial_number' => 'ASUS-PG32UQX-2025',
                 'specifications' => 'Size: 32", Resolution: 3840x2160, Refresh Rate: 144Hz, Panel Type: IPS, Response Time: 1ms, HDR: VESA DisplayHDR 1400',
                 'location' => 'Shelf I1',
-                'status' => 'available'
+                'status' => 'available',
             ],
             [
                 'name' => 'Dell Alienware AW3423DW',
@@ -397,7 +397,7 @@ class ProductSeeder extends Seeder
                 'serial_number' => 'DELL-AW3423DW-2025',
                 'specifications' => 'Size: 34" Curved, Resolution: 3440x1440, Refresh Rate: 175Hz, Panel Type: QD-OLED, Response Time: 0.1ms, HDR: True Black 400',
                 'location' => 'Shelf I1',
-                'status' => 'available'
+                'status' => 'available',
             ],
             // Peripherals
             [
@@ -414,7 +414,7 @@ class ProductSeeder extends Seeder
                 'serial_number' => 'LOGITECH-GPXS-2025',
                 'specifications' => 'Sensor: HERO 25K, DPI: 25,600, Weight: 63g, Battery Life: 70 hours, Connection: Wireless, Buttons: 5',
                 'location' => 'Shelf J1',
-                'status' => 'available'
+                'status' => 'available',
             ],
             [
                 'name' => 'SteelSeries Apex Pro TKL',
@@ -430,7 +430,7 @@ class ProductSeeder extends Seeder
                 'serial_number' => 'STEELSERIES-APTKLW-25',
                 'specifications' => 'Switch Type: OmniPoint 2.0 Adjustable, Layout: TKL, Connection: 2.4GHz/Bluetooth/USB-C, Battery Life: 40 hours',
                 'location' => 'Shelf J1',
-                'status' => 'available'
+                'status' => 'available',
             ],
         ];
 
@@ -448,4 +448,3 @@ class ProductSeeder extends Seeder
         }
     }
 }
-

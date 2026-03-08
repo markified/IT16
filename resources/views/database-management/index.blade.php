@@ -131,7 +131,7 @@
                                 <td>
                                     <div class="btn-group btn-group-sm">
                                         <a href="{{ route('database.table.show', $table['name']) }}" class="btn btn-info" title="View">
-                                            <i class="fas fa-eye"></i>
+                                            <i class="fas fa-list"></i>
                                         </a>
                                         <a href="{{ route('database.table.export', ['table' => $table['name'], 'format' => 'csv']) }}" class="btn btn-success" title="Export CSV">
                                             <i class="fas fa-download"></i>

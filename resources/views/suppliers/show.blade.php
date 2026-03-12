@@ -25,11 +25,11 @@
                 </div>
                 <div class="row mb-3">
                     <div class="col-md-4 fw-bold">Contact Number:</div>
-                    <div class="col-md-8">{{ $supplier->contact_number }}</div>
+                    <div class="col-md-8">@maskable($supplier->contact_number, 'phone')</div>
                 </div>
                 <div class="row mb-3">
                     <div class="col-md-4 fw-bold">Email:</div>
-                    <div class="col-md-8">{{ $supplier->email }}</div>
+                    <div class="col-md-8">@maskable($supplier->email, 'email')</div>
                 </div>
                 <div class="row mb-3">
                     <div class="col-md-4 fw-bold">Created At:</div>

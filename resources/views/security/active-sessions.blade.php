@@ -50,12 +50,12 @@
                     <tr class="{{ $session->user_id == auth()->id() ? 'table-info' : '' }}">
                         <td>
                             <strong>{{ $session->user_name }}</strong>
-                            <br><small class="text-muted">{{ $session->user_email }}</small>
+                            <br><small class="text-muted">@maskable($session->user_email, 'email')</small>
                             @if($session->user_id == auth()->id())
                             <span class="badge bg-primary">Current</span>
                             @endif
                         </td>
-                        <td><code>{{ $session->ip_address }}</code></td>
+                        <td>@maskable($session->ip_address, 'ip')</td>
                         <td>
                             @if($session->browser == 'Chrome')
                             <i class="fab fa-chrome text-warning"></i>

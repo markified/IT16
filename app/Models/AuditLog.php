@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\IpHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -42,7 +43,7 @@ class AuditLog extends Model
             'model_id' => $model->id,
             'old_values' => $oldValues,
             'new_values' => $newValues,
-            'ip_address' => Request::ip(),
+            'ip_address' => IpHelper::getClientIp(),
             'user_agent' => Request::userAgent(),
             'description' => $description,
         ]);
@@ -98,7 +99,7 @@ class AuditLog extends Model
             'model_id' => $user->id,
             'old_values' => null,
             'new_values' => null,
-            'ip_address' => Request::ip(),
+            'ip_address' => IpHelper::getClientIp(),
             'user_agent' => Request::userAgent(),
             'description' => $description ?? ($action === 'login' ? "User {$user->name} logged in" : "User {$user->name} logged out"),
         ]);
@@ -123,7 +124,7 @@ class AuditLog extends Model
             'model_id' => null,
             'old_values' => null,
             'new_values' => ['email' => $email],
-            'ip_address' => Request::ip(),
+            'ip_address' => IpHelper::getClientIp(),
             'user_agent' => Request::userAgent(),
             'description' => "Failed login attempt for email: {$email}",
         ]);

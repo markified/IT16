@@ -51,8 +51,8 @@
         <tr>
             <td>{{ $loop->iteration }}</td>
             <td>{{ $supplier->name }}</td>
-            <td>{{ $supplier->contact_number }}</td>
-            <td>{{ $supplier->email }}</td>
+            <td>@maskable($supplier->contact_number, 'phone')</td>
+            <td>@maskable($supplier->email, 'email')</td>
         </tr>
         @empty
         <tr>

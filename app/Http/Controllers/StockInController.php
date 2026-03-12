@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\InputSanitizerHelper;
 use App\Models\Product;
 use App\Models\StockIn;
 use Illuminate\Http\Request;
@@ -37,14 +38,29 @@ class StockInController extends Controller
      */
     public function store(Request $request)
     {
+        // Sanitize inputs before validation
+        $sanitizationRules = [
+            'product_id' => 'integer',
+            'quantity' => 'integer',
+            'unit_cost' => 'numeric',
+            'supplier_name' => 'string',
+            'reference_number' => 'reference_number',
+            'received_date' => 'date',
+            'notes' => 'textarea',
+        ];
+        $sanitized = InputSanitizerHelper::sanitizeRequest($request, $sanitizationRules);
+        $request->merge($sanitized);
+
         $validated = $request->validate([
             'product_id' => 'required|exists:products,id',
             'quantity' => 'required|integer|min:1',
             'unit_cost' => 'nullable|numeric|min:0',
             'supplier_name' => 'nullable|string|max:255',
-            'reference_number' => 'nullable|string|max:255',
+            'reference_number' => 'nullable|string|max:255|regex:/^[0-9]*$/',
             'received_date' => 'required|date',
             'notes' => 'nullable|string',
+        ], [
+            'reference_number.regex' => 'Reference number must contain only numbers.',
         ]);
 
         $validated['received_by'] = Auth::user()->name;

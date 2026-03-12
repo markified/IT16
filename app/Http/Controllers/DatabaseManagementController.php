@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\IpHelper;
 use App\Models\AuditLog;
 use App\Models\DatabaseBackup;
 use Illuminate\Http\Request;
@@ -128,23 +129,8 @@ class DatabaseManagementController extends Controller
         ]);
 
         try {
-            // Build mysqldump command
-            $command = sprintf(
-                'mysqldump --host=%s --port=%s --user=%s --password=%s %s > "%s"',
-                escapeshellarg(config('database.connections.mysql.host')),
-                escapeshellarg(config('database.connections.mysql.port')),
-                escapeshellarg(config('database.connections.mysql.username')),
-                escapeshellarg(config('database.connections.mysql.password')),
-                escapeshellarg($databaseName),
-                $fullPath
-            );
-
-            // Execute backup
-            exec($command . ' 2>&1', $output, $returnCode);
-
-            if ($returnCode !== 0 || ! file_exists($fullPath)) {
-                throw new \Exception('Backup command failed: ' . implode("\n", $output));
-            }
+            // PHP/PDO-based backup — no dependency on mysqldump in PATH
+            $this->createSqlDump($databaseName, $fullPath);
 
             // Update backup record with file size
             $backup->update([
@@ -158,7 +144,7 @@ class DatabaseManagementController extends Controller
                 'action' => 'backup_created',
                 'model_type' => 'DatabaseBackup',
                 'model_id' => $backup->id,
-                'ip_address' => $request->ip(),
+                'ip_address' => IpHelper::getClientIp($request),
                 'user_agent' => $request->userAgent(),
                 'description' => "Database backup created: {$filename}",
             ]);
@@ -176,9 +162,7 @@ class DatabaseManagementController extends Controller
         }
     }
 
-    /**
-     * Download a backup file.
-     */
+    
     public function downloadBackup($id)
     {
         // Allow superadmin and security roles (middleware already protects this route)
@@ -196,9 +180,7 @@ class DatabaseManagementController extends Controller
         return response()->download($backup->path, $backup->filename);
     }
 
-    /**
-     * Delete a backup.
-     */
+    
     public function deleteBackup(Request $request, $id)
     {
         // Allow superadmin and security roles (middleware already protects this route)
@@ -217,7 +199,7 @@ class DatabaseManagementController extends Controller
             'action' => 'backup_deleted',
             'model_type' => 'DatabaseBackup',
             'model_id' => $backup->id,
-            'ip_address' => $request->ip(),
+            'ip_address' => IpHelper::getClientIp($request),
             'user_agent' => $request->userAgent(),
             'description' => "Database backup deleted: {$backup->filename}",
         ]);
@@ -270,24 +252,8 @@ class DatabaseManagementController extends Controller
         }
 
         try {
-            $databaseName = config('database.connections.mysql.database');
-
-            // Build mysql restore command
-            $command = sprintf(
-                'mysql --host=%s --port=%s --user=%s --password=%s %s < "%s"',
-                escapeshellarg(config('database.connections.mysql.host')),
-                escapeshellarg(config('database.connections.mysql.port')),
-                escapeshellarg(config('database.connections.mysql.username')),
-                escapeshellarg(config('database.connections.mysql.password')),
-                escapeshellarg($databaseName),
-                $backup->path
-            );
-
-            exec($command . ' 2>&1', $output, $returnCode);
-
-            if ($returnCode !== 0) {
-                throw new \Exception('Restore command failed: ' . implode("\n", $output));
-            }
+            // PHP/PDO-based restore — no dependency on mysql CLI being in PATH
+            $this->restoreFromSqlDump($backup->path);
 
             // Log the action
             AuditLog::create([
@@ -295,7 +261,7 @@ class DatabaseManagementController extends Controller
                 'action' => 'backup_restored',
                 'model_type' => 'DatabaseBackup',
                 'model_id' => $backup->id,
-                'ip_address' => $request->ip(),
+                'ip_address' => IpHelper::getClientIp($request),
                 'user_agent' => $request->userAgent(),
                 'description' => "Database restored from backup: {$backup->filename}",
             ]);
@@ -339,7 +305,7 @@ class DatabaseManagementController extends Controller
                 'action' => 'database_optimized',
                 'model_type' => 'Database',
                 'model_id' => 0,
-                'ip_address' => $request->ip(),
+                'ip_address' => IpHelper::getClientIp($request),
                 'user_agent' => $request->userAgent(),
                 'description' => 'Database tables optimized: ' . count($optimized) . ' tables',
             ]);
@@ -433,6 +399,94 @@ class DatabaseManagementController extends Controller
         }
 
         return redirect()->back()->with('error', 'Invalid export format.');
+    }
+
+    /**
+     * Create a SQL dump of the database using PHP/PDO.
+     * This avoids the dependency on mysqldump being in the system PATH.
+     */
+    protected function createSqlDump(string $databaseName, string $filePath): void
+    {
+        $pdo = DB::getPdo();
+
+        $handle = fopen($filePath, 'w');
+        if ($handle === false) {
+            throw new \Exception("Cannot create backup file at: {$filePath}");
+        }
+
+        try {
+            fwrite($handle, "-- Database Backup\n");
+            fwrite($handle, "-- Database: {$databaseName}\n");
+            fwrite($handle, "-- Generated: " . date('Y-m-d H:i:s') . "\n\n");
+            fwrite($handle, "SET FOREIGN_KEY_CHECKS=0;\n\n");
+
+            $tables = DB::select('SHOW TABLES');
+
+            foreach ($tables as $tableRow) {
+                $tableName = array_values((array) $tableRow)[0];
+
+                fwrite($handle, "DROP TABLE IF EXISTS `{$tableName}`;\n");
+
+                $createResult = DB::select("SHOW CREATE TABLE `{$tableName}`");
+                $createStatement = $createResult[0]->{'Create Table'};
+                fwrite($handle, $createStatement . ";\n\n");
+
+                $rows = DB::table($tableName)->get();
+
+                if ($rows->count() > 0) {
+                    $columns = array_keys((array) $rows->first());
+                    $columnList = implode(', ', array_map(fn ($c) => "`{$c}`", $columns));
+
+                    foreach ($rows as $row) {
+                        $values = array_map(function ($value) use ($pdo) {
+                            if ($value === null) {
+                                return 'NULL';
+                            }
+
+                            return $pdo->quote((string) $value);
+                        }, (array) $row);
+
+                        $valueList = implode(', ', $values);
+                        fwrite($handle, "INSERT INTO `{$tableName}` ({$columnList}) VALUES ({$valueList});\n");
+                    }
+
+                    fwrite($handle, "\n");
+                }
+            }
+
+            fwrite($handle, "SET FOREIGN_KEY_CHECKS=1;\n");
+        } finally {
+            fclose($handle);
+        }
+    }
+
+    /**
+     * Restore database from a SQL dump file using PHP/PDO.
+     */
+    protected function restoreFromSqlDump(string $filePath): void
+    {
+        $sql = file_get_contents($filePath);
+        if ($sql === false) {
+            throw new \Exception('Cannot read backup file.');
+        }
+
+        // Strip comment lines
+        $sql = preg_replace('/^--[^\n]*\n/m', '', $sql);
+
+        // Split into individual statements on ";\n"
+        $statements = array_filter(
+            array_map('trim', preg_split('/;\s*\n/', $sql)),
+            fn ($s) => $s !== ''
+        );
+
+        DB::statement('SET FOREIGN_KEY_CHECKS=0');
+        try {
+            foreach ($statements as $statement) {
+                DB::unprepared($statement);
+            }
+        } finally {
+            DB::statement('SET FOREIGN_KEY_CHECKS=1');
+        }
     }
 
     /**

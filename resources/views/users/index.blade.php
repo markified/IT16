@@ -51,7 +51,7 @@
         <tr class="{{ !$user->is_approved ? 'table-warning' : '' }}">
             <td class="align-middle">{{ $loop->iteration }}</td>
             <td class="align-middle">{{ $user->name }}</td>
-            <td class="align-middle">{{ $user->email }}</td>
+            <td class="align-middle">@maskable($user->email, 'email')</td>
             <td class="align-middle">
                 <span class="badge {{ $user->role === 'superadmin' ? 'bg-danger' : ($user->role === 'admin' ? 'bg-warning text-dark' : 'bg-info') }}">
                     {{ ucfirst($user->role) }}
@@ -134,6 +134,16 @@
                                 @error('password')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
+                                @if(isset($passwordRequirements) && count($passwordRequirements) > 0)
+                                <small class="text-muted">
+                                    <strong>Password Requirements:</strong>
+                                    <ul class="mb-0 mt-1">
+                                        @foreach($passwordRequirements as $requirement)
+                                        <li>{{ $requirement }}</li>
+                                        @endforeach
+                                    </ul>
+                                </small>
+                                @endif
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Confirm Password</label>
@@ -206,6 +216,16 @@
                         @error('password')
                         <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
+                        @if(isset($passwordRequirements) && count($passwordRequirements) > 0)
+                        <small class="text-muted">
+                            <strong>Password Requirements:</strong>
+                            <ul class="mb-0 mt-1">
+                                @foreach($passwordRequirements as $requirement)
+                                <li>{{ $requirement }}</li>
+                                @endforeach
+                            </ul>
+                        </small>
+                        @endif
                     </div>
                     <div class="mb-3">
                         <label for="password_confirmation" class="form-label">Confirm Password</label>

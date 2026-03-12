@@ -42,8 +42,8 @@
         <tr>
             <td class="align-middle">{{ $loop->iteration }}</td>
             <td class="align-middle">{{ $supplier->name }}</td>
-            <td class="align-middle">{{ $supplier->contact_number }}</td>
-            <td class="align-middle">{{ $supplier->email }}</td>
+            <td class="align-middle">@maskable($supplier->contact_number, 'phone')</td>
+            <td class="align-middle">@maskable($supplier->email, 'email')</td>
             <td class="align-middle">
                 <div class="btn-group btn-group-sm" role="group">
                     <a href="{{ route('suppliers.show', $supplier->id) }}" class="btn btn-info" title="View Details">

@@ -15,7 +15,7 @@
         <div class="card mt-4">
             <div class="card-body">
                 <h4 class="card-title">{{ $employee->name }}</h4>
-                <p class="card-text"><strong>Contact Number:</strong> {{ $employee->contact_number }}</p>
+                <p class="card-text"><strong>Contact Number:</strong> @maskable($employee->contact_number, 'phone')</p>
             </div>
         </div>
 

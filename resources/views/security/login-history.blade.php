@@ -89,8 +89,8 @@
                             <small class="text-muted">{{ $history->login_at->format('H:i:s') }}</small>
                         </td>
                         <td>{{ $history->user->name ?? 'N/A' }}</td>
-                        <td>{{ $history->email ?? 'N/A' }}</td>
-                        <td><code>{{ $history->ip_address }}</code></td>
+                        <td>@maskable($history->email ?? 'N/A', 'email')</td>
+                        <td>@maskable($history->ip_address, 'ip')</td>
                         <td>
                             <small>
                                 @if($history->browser == 'Chrome')

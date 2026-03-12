@@ -21,17 +21,13 @@
             box-sizing: border-box;
         }
 
-        html, body {
-            height: 100%;
-        }
-
         body {
             font-family: 'Nunito', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background: url("{{ asset('image/bg6.png') }}") no-repeat center center;
+            background: url("{{ asset('image/bg6.png') }}") no-repeat center center fixed;
             background-size: cover;
             position: relative;
             padding: 20px;
@@ -39,7 +35,7 @@
 
         body::before {
             content: '';
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             right: 0;
@@ -160,6 +156,7 @@
         }
 
         .invalid-feedback {
+            display: block;
             color: #ff6b6b;
             font-size: 12px;
             margin-top: 6px;
@@ -375,7 +372,7 @@
             <div class="alert alert-danger">
                 <ul>
                     @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
+                    <li><i class="fas fa-exclamation-circle mr-1"></i>{{ $error }}</li>
                     @endforeach
                 </ul>
             </div>
@@ -385,7 +382,7 @@
                 <label for="email">Email Address <span class="text-danger">*</span></label>
                 <input name="email" id="email" type="email" class="form-control @error('email') is-invalid @enderror" placeholder="Enter your email address" value="{{ old('email') }}" required>
                 @error('email')
-                <div class="invalid-feedback">{{ $message }}</div>
+                <div class="invalid-feedback"><i class="fas fa-times-circle mr-1"></i>{{ $message }}</div>
                 @enderror
             </div>
 
@@ -393,7 +390,7 @@
                 <label for="password">Password <span class="text-danger">*</span></label>
                 <input name="password" id="password" type="password" class="form-control @error('password') is-invalid @enderror" placeholder="Enter your password" required>
                 @error('password')
-                <div class="invalid-feedback">{{ $message }}</div>
+                <div class="invalid-feedback"><i class="fas fa-times-circle mr-1"></i>{{ $message }}</div>
                 @enderror
             </div>
 

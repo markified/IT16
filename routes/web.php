@@ -166,6 +166,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/{report}/edit', [ReportController::class, 'edit'])->name('reports.edit');
         Route::put('/{report}', [ReportController::class, 'update'])->name('reports.update');
         Route::delete('/{report}', [ReportController::class, 'destroy'])->name('reports.destroy');
+        Route::get('/{report}/download', [ReportController::class, 'downloadPdf'])->name('reports.download');
     });
 
     // Database Management Routes (Superadmin & Security)
@@ -196,7 +197,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/export-logs', [SecurityController::class, 'exportLogs'])->name('security.export-logs');
     });
 
+    // Profile routes
     Route::get('/profile', [App\Http\Controllers\AuthController::class, 'profile'])->name('profile');
+    Route::put('/profile', [App\Http\Controllers\AuthController::class, 'updateProfile'])->name('profile.update');
+    Route::put('/profile/password', [App\Http\Controllers\AuthController::class, 'updatePassword'])->name('profile.password');
 });
 
 Route::get('/search', [SearchController::class, 'index'])->name('search');

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\InputSanitizerHelper;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 
@@ -30,6 +31,15 @@ class SupplierController extends Controller
      */
     public function store(Request $request)
     {
+        // Sanitize inputs before validation
+        $sanitizationRules = [
+            'name' => 'string',
+            'contact_number' => 'phone',
+            'email' => 'email',
+        ];
+        $sanitized = InputSanitizerHelper::sanitizeRequest($request, $sanitizationRules);
+        $request->merge($sanitized);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'contact_number' => 'required|string|max:255',
@@ -76,6 +86,15 @@ class SupplierController extends Controller
     public function update(Request $request, string $id)
     {
         $supplier = Supplier::findOrFail($id);
+
+        // Sanitize inputs before validation
+        $sanitizationRules = [
+            'name' => 'string',
+            'contact_number' => 'phone',
+            'email' => 'email',
+        ];
+        $sanitized = InputSanitizerHelper::sanitizeRequest($request, $sanitizationRules);
+        $request->merge($sanitized);
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',

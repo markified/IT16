@@ -102,7 +102,7 @@
                             <a href="{{ route('audit-logs.show', $log->id) }}" class="small">more...</a>
                             @endif
                         </td>
-                        <td><code>{{ $log->ip_address }}</code></td>
+                        <td>@maskable($log->ip_address, 'ip')</td>
                     </tr>
                     @empty
                     <tr>

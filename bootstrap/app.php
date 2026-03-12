@@ -18,6 +18,14 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Trust all proxies to get real client IP address
+        $middleware->trustProxies(at: '*');
+        
+        // Append session security middleware to web group
+        $middleware->web(append: [
+            \App\Http\Middleware\SessionSecurityMiddleware::class,
+        ]);
+        
         $middleware->alias([
             'superadmin' => \App\Http\Middleware\AdminMiddleware::class,
             'admin' => \App\Http\Middleware\AdminViewMiddleware::class,

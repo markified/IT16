@@ -33,7 +33,7 @@
                                     <select class="form-control @error('report_type') is-invalid @enderror" id="report_type" name="report_type" required>
                                         <option value="" selected disabled>Select Report Type</option>
                                         @foreach($reportTypes as $type)
-                                        <option value="{{ $type }}" {{ old('report_type') == $type ? 'selected' : '' }}>{{ ucfirst($type) }}</option>
+                                        <option value="{{ $type }}" {{ old('report_type') == $type ? 'selected' : '' }}>{{ ucwords(str_replace('_', ' ', $type)) }}</option>
                                         @endforeach
                                     </select>
                                     @error('report_type')
@@ -91,33 +91,22 @@
                                     </div>
                                 </div>
 
-                                <div id="purchase-order-params" class="report-params">
-                                    <h4>Purchase Order Report Parameters</h4>
+                                <div id="stock-out-order-params" class="report-params">
+                                    <h4>Stock Out Order Report Parameters</h4>
                                     <div class="form-group mb-3">
-                                        <label for="status">Order Status</label>
-                                        <select class="form-control" id="status" name="status">
+                                        <label for="stock_out_status">Order Status</label>
+                                        <select class="form-control" id="stock_out_status" name="status">
                                             <option value="">All Statuses</option>
                                             <option value="pending">Pending</option>
                                             <option value="approved">Approved</option>
-                                            <option value="partial">Partial</option>
-                                            <option value="received">Received</option>
-                                            <option value="completed">Completed</option>
+                                            <option value="issued">Issued</option>
                                             <option value="cancelled">Cancelled</option>
                                         </select>
                                     </div>
                                     <div class="form-group mb-3">
-                                        <label for="supplier_id">Supplier</label>
-                                        <select class="form-control" id="supplier_id" name="supplier_id">
-                                            <option value="">All Suppliers</option>
-                                            @foreach($suppliers as $supplier)
-                                            <option value="{{ $supplier->id }}" {{ old('supplier_id') == $supplier->id ? 'selected' : '' }}>{{ $supplier->name }}</option>
-                                            @endforeach
-                                        </select>
+                                        <label for="recipient">Recipient</label>
+                                        <input type="text" class="form-control" id="recipient" name="recipient" value="{{ old('recipient') }}" placeholder="Filter by recipient name...">
                                     </div>
-                                </div>
-
-                                <div id="issue-params" class="report-params">
-                                    <h4>Issue Report Parameters</h4>
                                 </div>
 
                                 <div id="supplier-params" class="report-params">
@@ -164,7 +153,7 @@
             });
 
             if (reportType) {
-                const sectionId = reportType === 'purchase_order' ? 'purchase-order-params' : reportType + '-params';
+                const sectionId = reportType.replace(/_/g, '-') + '-params';
                 const section = document.getElementById(sectionId);
                 if (section) {
                     section.style.display = 'block';

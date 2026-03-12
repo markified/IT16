@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\IpHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -68,7 +69,7 @@ class LoginHistory extends Model
         return self::create([
             'user_id' => $user->id,
             'email' => $user->email,
-            'ip_address' => $request->ip(),
+            'ip_address' => IpHelper::getClientIp($request),
             'user_agent' => $request->userAgent(),
             'browser' => self::getBrowser($request->userAgent()),
             'platform' => self::getPlatform($request->userAgent()),
@@ -85,7 +86,7 @@ class LoginHistory extends Model
     {
         return self::create([
             'email' => $email,
-            'ip_address' => $request->ip(),
+            'ip_address' => IpHelper::getClientIp($request),
             'user_agent' => $request->userAgent(),
             'browser' => self::getBrowser($request->userAgent()),
             'platform' => self::getPlatform($request->userAgent()),
@@ -103,7 +104,7 @@ class LoginHistory extends Model
     {
         return self::create([
             'email' => $email,
-            'ip_address' => $request->ip(),
+            'ip_address' => IpHelper::getClientIp($request),
             'user_agent' => $request->userAgent(),
             'browser' => self::getBrowser($request->userAgent()),
             'platform' => self::getPlatform($request->userAgent()),

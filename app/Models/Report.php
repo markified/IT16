@@ -36,36 +36,6 @@ class Report extends Model
     ];
 
     /**
-     * Boot the model.
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($model) {
-            // Ensure data is encoded if needed
-            if (is_array($model->parameters)) {
-                $model->parameters = json_encode($model->parameters);
-            }
-
-            if (is_array($model->data)) {
-                $model->data = json_encode($model->data);
-            }
-        });
-
-        static::retrieved(function ($model) {
-            // Ensure data is decoded for use
-            if (is_string($model->parameters)) {
-                $model->parameters = json_decode($model->parameters, true);
-            }
-
-            if (is_string($model->data)) {
-                $model->data = json_decode($model->data, true);
-            }
-        });
-    }
-
-    /**
      * Get the user who generated this report.
      */
     public function user()

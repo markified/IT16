@@ -11,7 +11,7 @@
         <a href="{{ route('database.index') }}" class="btn btn-secondary me-2">
             <i class="fas fa-arrow-left me-1"></i> Back
         </a>
-        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createBackupModal">
+        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#createBackupModal">
             <i class="fas fa-plus me-1"></i> Create Backup
         </button>
     </div>
@@ -20,14 +20,14 @@
 @if(Session::has('success'))
 <div class="alert alert-success alert-dismissible fade show" role="alert">
     {{ Session::get('success') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 </div>
 @endif
 
 @if(Session::has('error'))
 <div class="alert alert-danger alert-dismissible fade show" role="alert">
     {{ Session::get('error') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 </div>
 @endif
 
@@ -104,7 +104,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="createBackupModalLabel">Create Database Backup</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             </div>
             <form action="{{ route('database.backup.create') }}" method="POST">
                 @csrf
@@ -119,7 +119,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-success">
                         <i class="fas fa-database me-1"></i> Create Backup
                     </button>

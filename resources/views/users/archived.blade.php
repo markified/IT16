@@ -40,7 +40,7 @@
         <tr>
             <td class="align-middle">{{ $loop->iteration }}</td>
             <td class="align-middle">{{ $user->name }}</td>
-            <td class="align-middle">{{ $user->email }}</td>
+            <td class="align-middle">@maskable($user->email, 'email')</td>
             <td class="align-middle">
                 <span class="badge {{ $user->role === 'superadmin' ? 'bg-danger' : ($user->role === 'admin' ? 'bg-warning text-dark' : 'bg-info') }}">
                     {{ ucfirst($user->role) }}

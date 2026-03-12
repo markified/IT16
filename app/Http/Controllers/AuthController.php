@@ -160,8 +160,16 @@ class AuthController extends Controller
             }
 
             AuditLog::logLoginFailed($request->email);
+
+            // Give specific feedback: highlight the field that is wrong
+            if (! $user) {
+                throw ValidationException::withMessages([
+                    'email' => 'No account found with this email address.',
+                ]);
+            }
+
             throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
+                'password' => 'The password you entered is incorrect.',
             ]);
         }
 

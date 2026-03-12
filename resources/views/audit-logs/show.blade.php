@@ -41,7 +41,7 @@
                     </tr>
                     <tr>
                         <td><strong>IP Address:</strong></td>
-                        <td><code>{{ $log->ip_address }}</code></td>
+                        <td>@maskable($log->ip_address, 'ip')</td>
                     </tr>
                     <tr>
                         <td><strong>User Agent:</strong></td>

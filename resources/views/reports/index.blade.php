@@ -28,7 +28,7 @@
                             <tbody>
                                 @forelse($reports as $report)
                                 <tr>
-                                    <td>{{ $report->title }}</td>
+                                    <td>{{ $report->name }}</td>
                                     <td>
                                         <span class="badge bg-info">{{ ucfirst($report->report_type) }}</span>
                                     </td>

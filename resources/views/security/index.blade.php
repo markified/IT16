@@ -188,9 +188,15 @@
                                     <small>{{ $login->login_at->format('M d, H:i') }}</small>
                                 </td>
                                 <td>
-                                    {{ $login->user->name ?? $login->email ?? 'Unknown' }}
+                                    @if($login->user)
+                                        {{ $login->user->name }}
+                                    @elseif($login->email)
+                                        @maskable($login->email, 'email')
+                                    @else
+                                        Unknown
+                                    @endif
                                 </td>
-                                <td><code>{{ $login->ip_address }}</code></td>
+                                <td>@maskable($login->ip_address, 'ip')</td>
                                 <td>{!! $login->status_badge !!}</td>
                             </tr>
                             @empty

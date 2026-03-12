@@ -29,7 +29,7 @@
         <tr>
             <td class="align-middle">{{ $loop->iteration }}</td>
             <td class="align-middle">{{ $employee->name }}</td>
-            <td class="align-middle">{{ $employee->contact_number }}</td>
+            <td class="align-middle">@maskable($employee->contact_number, 'phone')</td>
             <td class="align-middle">
                 <div class="btn-group" role="group">
                     <button type="button" class="btn btn-warning" onclick="$('#editEmployeeModal{{ $employee->id }}').modal('show')">

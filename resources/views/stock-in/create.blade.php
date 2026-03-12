@@ -103,7 +103,11 @@
                                 </label>
                                 <input type="text" name="reference_number" 
                                        class="form-control @error('reference_number') is-invalid @enderror" 
-                                       value="{{ old('reference_number') }}" placeholder="PO#, Invoice#, etc.">
+                                       value="{{ old('reference_number') }}" 
+                                       placeholder="Enter numbers only"
+                                       pattern="[0-9]*"
+                                       inputmode="numeric"
+                                       oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                                 @error('reference_number')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror

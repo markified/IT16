@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\InputSanitizerHelper;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Supplier;
@@ -65,6 +66,25 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
+        // Sanitize inputs before validation
+        $sanitizationRules = [
+            'name' => 'string',
+            'brand' => 'string',
+            'model_number' => 'string',
+            'description' => 'textarea',
+            'type' => 'string',
+            'quantity' => 'integer',
+            'min_stock_level' => 'integer',
+            'specifications' => 'textarea',
+            'location' => 'string',
+            'price_per_item' => 'numeric',
+            'cost_price' => 'numeric',
+            'status' => 'string',
+            'barcode' => 'string',
+        ];
+        $sanitized = InputSanitizerHelper::sanitizeRequest($request, $sanitizationRules);
+        $request->merge($sanitized);
+
         $validated = $request->validate([
             'category_id' => 'nullable|exists:categories,id',
             'name' => 'required|string|max:255',
@@ -137,6 +157,27 @@ class ProductController extends Controller
     public function update(Request $request, string $id)
     {
         $product = Product::findOrFail($id);
+
+        // Sanitize inputs before validation
+        $sanitizationRules = [
+            'name' => 'string',
+            'brand' => 'string',
+            'model_number' => 'string',
+            'description' => 'textarea',
+            'type' => 'string',
+            'quantity' => 'integer',
+            'min_stock_level' => 'integer',
+            'serial_number' => 'string',
+            'sku' => 'string',
+            'barcode' => 'string',
+            'specifications' => 'textarea',
+            'location' => 'string',
+            'price_per_item' => 'numeric',
+            'cost_price' => 'numeric',
+            'status' => 'string',
+        ];
+        $sanitized = InputSanitizerHelper::sanitizeRequest($request, $sanitizationRules);
+        $request->merge($sanitized);
 
         $validated = $request->validate([
             'category_id' => 'nullable|exists:categories,id',

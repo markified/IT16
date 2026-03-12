@@ -21,10 +21,6 @@
             box-sizing: border-box;
         }
 
-        html, body {
-            height: 100%;
-        }
-
         body {
             font-family: 'Nunito', sans-serif;
             display: flex;
@@ -104,8 +100,6 @@
             background: linear-gradient(135deg, #001d6d 0%, #002a8f 50%, #0039b3 100%);
             border-radius: 24px;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
-            overflow-y: auto;
-            max-height: 90vh;
         }
 
         .form-header {
@@ -187,6 +181,7 @@
         }
 
         .invalid-feedback {
+            display: block;
             color: #ff6b6b;
             font-size: 12px;
             margin-top: 6px;
@@ -298,7 +293,6 @@
                 flex: 1 1 auto;
                 min-width: 100%;
                 padding: 35px 30px;
-                max-height: none;
             }
 
             .form-header h1 {
@@ -447,6 +441,18 @@
                 @error('password')
                 <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
+                @if(isset($passwordRequirements) && count($passwordRequirements) > 0)
+                <div class="mt-2" style="background: rgba(255,255,255,0.1); border-radius: 8px; padding: 10px;">
+                    <small style="color: rgba(255,255,255,0.7);">
+                        <strong>Password Requirements:</strong>
+                        <ul class="mb-0 mt-1" style="padding-left: 20px;">
+                            @foreach($passwordRequirements as $requirement)
+                            <li>{{ $requirement }}</li>
+                            @endforeach
+                        </ul>
+                    </small>
+                </div>
+                @endif
             </div>
 
             <div class="form-group">

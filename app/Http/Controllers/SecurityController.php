@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\IpHelper;
 use App\Models\AuditLog;
 use App\Models\LoginHistory;
 use App\Models\SecuritySetting;
@@ -168,7 +169,7 @@ class SecurityController extends Controller
                 'action' => 'settings_updated',
                 'model_type' => 'SecuritySetting',
                 'model_id' => 0,
-                'ip_address' => $request->ip(),
+                'ip_address' => IpHelper::getClientIp($request),
                 'user_agent' => $request->userAgent(),
                 'description' => 'Security settings updated',
             ]);
@@ -191,12 +192,15 @@ class SecurityController extends Controller
         }
 
         // Get active sessions from database session driver
+        // Use subquery to get the real device IP from the most recent successful login
         $sessions = DB::table('sessions')
             ->join('users', 'sessions.user_id', '=', 'users.id')
             ->select(
                 'sessions.id',
                 'sessions.user_id',
-                'sessions.ip_address',
+                DB::raw("(SELECT lh.ip_address FROM login_histories lh 
+                          WHERE lh.user_id = sessions.user_id AND lh.status = 'success' 
+                          ORDER BY lh.id DESC LIMIT 1) as ip_address"),
                 'sessions.user_agent',
                 'sessions.last_activity',
                 'users.name as user_name',
@@ -209,6 +213,12 @@ class SecurityController extends Controller
                 $session->last_activity = \Carbon\Carbon::createFromTimestamp($session->last_activity);
                 $session->browser = $this->getBrowser($session->user_agent);
                 $session->platform = $this->getPlatform($session->user_agent);
+                // Fallback to session IP if no login history found
+                if (empty($session->ip_address)) {
+                    $session->ip_address = DB::table('sessions')
+                        ->where('id', $session->id)
+                        ->value('ip_address') ?? 'Unknown';
+                }
 
                 return $session;
             });
@@ -235,7 +245,7 @@ class SecurityController extends Controller
                 'action' => 'session_terminated',
                 'model_type' => 'Session',
                 'model_id' => 0,
-                'ip_address' => $request->ip(),
+                'ip_address' => IpHelper::getClientIp($request),
                 'user_agent' => $request->userAgent(),
                 'description' => 'User session terminated: ' . $sessionId,
             ]);
@@ -268,7 +278,7 @@ class SecurityController extends Controller
                 'action' => 'user_unlocked',
                 'model_type' => 'User',
                 'model_id' => $user->id,
-                'ip_address' => $request->ip(),
+                'ip_address' => IpHelper::getClientIp($request),
                 'user_agent' => $request->userAgent(),
                 'description' => "User account unlocked: {$user->email}",
             ]);
@@ -311,7 +321,7 @@ class SecurityController extends Controller
                 'action' => "user_{$status}",
                 'model_type' => 'User',
                 'model_id' => $user->id,
-                'ip_address' => $request->ip(),
+                'ip_address' => IpHelper::getClientIp($request),
                 'user_agent' => $request->userAgent(),
                 'description' => "User account {$status}: {$user->email}",
             ]);
@@ -345,7 +355,7 @@ class SecurityController extends Controller
                 'action' => 'force_password_change',
                 'model_type' => 'User',
                 'model_id' => $user->id,
-                'ip_address' => $request->ip(),
+                'ip_address' => IpHelper::getClientIp($request),
                 'user_agent' => $request->userAgent(),
                 'description' => "Forced password change for user: {$user->email}",
             ]);

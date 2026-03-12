@@ -27,6 +27,38 @@
 
     <!-- Custom styles for sticky sidebar -->
     <style>
+        /* Data Masking Styles */
+        .maskable-field {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        .maskable-field .toggle-mask {
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.2s ease;
+        }
+        .maskable-field .toggle-mask:hover {
+            opacity: 1;
+        }
+        .maskable-field .toggle-mask i {
+            font-size: 0.85rem;
+        }
+        .masked-data {
+            font-family: monospace;
+            letter-spacing: 0.5px;
+        }
+        .data-mask-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .bulk-mask-toggle {
+            font-size: 0.85rem;
+        }
+        
         .sidebar {
             position: sticky !important;
             top: 0;
@@ -731,6 +763,61 @@
             color: #212529 !important;
         }
 
+        /* ===== Icon (FontAwesome) Visibility Fix — Dark & Light Mode ===== */
+
+        /* Dark mode: uncoloured FA icons default to a visible light colour on dark backgrounds */
+        body.dark-mode i.fas,
+        body.dark-mode i.far,
+        body.dark-mode i.fal,
+        body.dark-mode i.fab,
+        body.dark-mode i.fa {
+            color: #c8cce0;
+        }
+
+        /* Light mode: uncoloured FA icons default to a readable mid-gray on light backgrounds */
+        body:not(.dark-mode) i.fas,
+        body:not(.dark-mode) i.far,
+        body:not(.dark-mode) i.fab,
+        body:not(.dark-mode) i.fa {
+            color: #5a5c69;
+        }
+
+        /* Contextual overrides: alert and badge icons should match their parent text colour */
+        .alert i, .alert .fas, .alert .far, .alert .fa { color: inherit; }
+        .badge i, .badge .fas, .badge .far, .badge .fa { color: inherit; }
+
+        /* Coloured action buttons — icons must always be white */
+        .btn-primary i, .btn-primary .fas, .btn-primary .fa,
+        .btn-success i, .btn-success .fas, .btn-success .fa,
+        .btn-danger i,  .btn-danger .fas,  .btn-danger .fa,
+        .btn-info i,    .btn-info .fas,    .btn-info .fa,
+        .btn-secondary i, .btn-secondary .fas, .btn-secondary .fa { color: #fff !important; }
+
+        /* Light-background buttons — keep dark icons (light bg = dark icon is readable) */
+        .btn-warning i, .btn-warning .fas, .btn-warning .fa,
+        .btn-light i,   .btn-light .fas,   .btn-light .fa { color: #212529 !important; }
+
+        /* Scroll-to-top button (blue bg → white icon) */
+        .scroll-to-top i, .scroll-to-top .fas { color: #fff !important; }
+
+        /* Dark mode — btn-link (topbar sidebar toggle) needs a visible lighter colour */
+        body.dark-mode .btn-link i,
+        body.dark-mode .btn-link .fas,
+        body.dark-mode .btn-link .fa { color: #a8b2cc !important; }
+
+        /* Sidebar icons: always visible against the persistent dark-blue sidebar */
+        .sidebar i.fas, .sidebar i.fa, .sidebar i.far { color: rgba(255,255,255,.8) !important; }
+
+        /* Fix text-gray-300 / 200 / 100 in LIGHT mode — they're near-white on white card bg */
+        body:not(.dark-mode) .text-gray-100 { color: #c2c5ce !important; }
+        body:not(.dark-mode) .text-gray-200 { color: #adb5bd !important; }
+        body:not(.dark-mode) .text-gray-300 { color: #9299a4 !important; }
+
+        /* Dark mode: text-gray-100 / 200 / 300 → medium steel-blue/gray, readable on dark bg */
+        body.dark-mode .text-gray-100,
+        body.dark-mode .text-gray-200,
+        body.dark-mode .text-gray-300 { color: #8b9cbf !important; }
+
         /* Smooth transitions */
         body, #content-wrapper, #content, .topbar, .sticky-footer, .card,
         .card-header, .card-body, .table, .dropdown-menu, .form-control,
@@ -1202,6 +1289,130 @@
                 });
             }
         })();
+    </script>
+
+    <!-- Data Masking Toggle Script -->
+    <script>
+        // Toggle individual masked field
+        function toggleMask(button) {
+            const field = button.closest('.maskable-field');
+            if (!field) return;
+
+            const masked = field.querySelector('.masked-value');
+            const unmasked = field.querySelector('.unmasked-value');
+            const icon = button.querySelector('i');
+            const isMasked = field.dataset.masked === 'true';
+
+            if (isMasked) {
+                // Show unmasked
+                masked.classList.add('d-none');
+                unmasked.classList.remove('d-none');
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+                field.dataset.masked = 'false';
+            } else {
+                // Show masked
+                masked.classList.remove('d-none');
+                unmasked.classList.add('d-none');
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+                field.dataset.masked = 'true';
+            }
+        }
+
+        // Toggle all masked fields on the page
+        function toggleAllMasks(showUnmasked) {
+            const fields = document.querySelectorAll('.maskable-field');
+            fields.forEach(field => {
+                const masked = field.querySelector('.masked-value');
+                const unmasked = field.querySelector('.unmasked-value');
+                const icon = field.querySelector('.toggle-mask i');
+
+                if (showUnmasked) {
+                    masked.classList.add('d-none');
+                    unmasked.classList.remove('d-none');
+                    if (icon) {
+                        icon.classList.remove('fa-eye');
+                        icon.classList.add('fa-eye-slash');
+                    }
+                    field.dataset.masked = 'false';
+                } else {
+                    masked.classList.remove('d-none');
+                    unmasked.classList.add('d-none');
+                    if (icon) {
+                        icon.classList.remove('fa-eye-slash');
+                        icon.classList.add('fa-eye');
+                    }
+                    field.dataset.masked = 'true';
+                }
+            });
+        }
+
+        // Mask data client-side (for dynamically loaded content)
+        const DataMasker = {
+            maskEmail: function(email) {
+                if (!email || !email.includes('@')) return email;
+                const parts = email.split('@');
+                const name = parts[0];
+                const domain = parts[1];
+                const maskedName = name.length > 2 
+                    ? name[0] + '*'.repeat(name.length - 2) + name[name.length - 1]
+                    : name[0] + '*';
+                const domainParts = domain.split('.');
+                const maskedDomain = domainParts[0].length > 2
+                    ? domainParts[0][0] + '*'.repeat(domainParts[0].length - 2) + domainParts[0][domainParts[0].length - 1]
+                    : domainParts[0][0] + '*';
+                return maskedName + '@' + maskedDomain + '.' + domainParts.slice(1).join('.');
+            },
+
+            maskPhone: function(phone) {
+                if (!phone) return phone;
+                const clean = phone.replace(/[^0-9]/g, '');
+                if (clean.length < 4) return '*'.repeat(clean.length);
+                const visibleStart = Math.min(4, Math.floor(clean.length / 2));
+                const visibleEnd = Math.min(3, Math.ceil(clean.length / 3));
+                const maskLength = clean.length - visibleStart - visibleEnd;
+                return clean.substring(0, visibleStart) + '*'.repeat(maskLength) + clean.substring(clean.length - visibleEnd);
+            },
+
+            maskIp: function(ip) {
+                if (!ip) return ip;
+                const parts = ip.split('.');
+                if (parts.length === 4) {
+                    return parts[0] + '.' + parts[1] + '.***.***';
+                }
+                return ip.substring(0, 4) + '*'.repeat(Math.max(0, ip.length - 8)) + ip.substring(ip.length - 4);
+            },
+
+            maskName: function(name) {
+                if (!name) return name;
+                return name.split(' ').map(word => {
+                    if (word.length <= 1) return word;
+                    return word[0] + '*'.repeat(word.length - 1);
+                }).join(' ');
+            }
+        };
+
+        // Auto-mask sensitive data on page load (for elements with data-mask attribute)
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('[data-mask]').forEach(function(element) {
+                const type = element.dataset.mask;
+                const value = element.textContent.trim();
+                let masked;
+
+                switch(type) {
+                    case 'email': masked = DataMasker.maskEmail(value); break;
+                    case 'phone': masked = DataMasker.maskPhone(value); break;
+                    case 'ip': masked = DataMasker.maskIp(value); break;
+                    case 'name': masked = DataMasker.maskName(value); break;
+                    default: masked = value;
+                }
+
+                element.dataset.originalValue = value;
+                element.textContent = masked;
+                element.classList.add('masked-data');
+            });
+        });
     </script>
 </body>
 

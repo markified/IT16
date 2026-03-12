@@ -311,7 +311,7 @@
 
             <div class="form-group">
                 <label for="password">New Password <span class="text-danger">*</span></label>
-                <input name="password" id="password" type="password" class="form-control @error('password') is-invalid @enderror" placeholder="Enter new password" required>
+                <input name="password" id="password" type="password" class="form-control @error('password') is-invalid @enderror" placeholder="Enter new password (min. 12 characters)" minlength="12" required>
                 @error('password')
                 <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
@@ -319,7 +319,7 @@
 
             <div class="form-group">
                 <label for="password_confirmation">Confirm Password <span class="text-danger">*</span></label>
-                <input name="password_confirmation" id="password_confirmation" type="password" class="form-control" placeholder="Confirm new password" required>
+                <input name="password_confirmation" id="password_confirmation" type="password" class="form-control" placeholder="Confirm new password" minlength="12" required>
             </div>
 
             <button type="submit" class="btn-submit">

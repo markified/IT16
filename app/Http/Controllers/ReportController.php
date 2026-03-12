@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
-use App\Models\PurchaseOrder;
 use App\Models\Report;
+use App\Models\StockOutOrder;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -31,7 +31,7 @@ class ReportController extends Controller
      */
     public function create()
     {
-        $reportTypes = ['inventory', 'purchase_order', 'issue', 'supplier'];
+        $reportTypes = ['inventory', 'stock_out_order', 'supplier'];
         $suppliers = Supplier::all();
 
         return view('reports.create', compact('reportTypes', 'suppliers'));
@@ -46,7 +46,7 @@ class ReportController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'report_type' => 'required|in:inventory,purchase_order,issue,supplier',
+            'report_type' => 'required|in:inventory,stock_out_order,supplier',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
         ]);
@@ -60,7 +60,8 @@ class ReportController extends Controller
             );
 
             $report = new Report([
-                'title' => $request->title,
+                'name' => $request->title,
+                'type' => $request->report_type,
                 'report_type' => $request->report_type,
                 'parameters' => $request->except(['_token', 'title', 'report_type', 'start_date', 'end_date']),
                 'data' => $reportData,
@@ -76,7 +77,7 @@ class ReportController extends Controller
                 ->with('success', 'Report created successfully.');
         } catch (\Exception $e) {
             return redirect()->back()->withInput()
-                ->with('error', 'Failed to create report. Please try again.');
+                ->with('error', 'Failed to create report: ' . $e->getMessage());
         }
     }
 
@@ -97,7 +98,7 @@ class ReportController extends Controller
      */
     public function edit(Report $report)
     {
-        $reportTypes = ['inventory', 'purchase_order', 'issue', 'supplier'];
+        $reportTypes = ['inventory', 'stock_out_order', 'supplier'];
         $suppliers = Supplier::all();
 
         return view('reports.edit', compact('report', 'reportTypes', 'suppliers'));
@@ -112,7 +113,7 @@ class ReportController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'report_type' => 'required|in:inventory,purchase_order,issue,supplier',
+            'report_type' => 'required|in:inventory,stock_out_order,supplier',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
         ]);
@@ -126,7 +127,8 @@ class ReportController extends Controller
             );
 
             $report->update([
-                'title' => $request->title,
+                'name' => $request->title,
+                'type' => $request->report_type,
                 'report_type' => $request->report_type,
                 'parameters' => $request->except(['_token', '_method', 'title', 'report_type', 'start_date', 'end_date']),
                 'data' => $reportData,
@@ -139,7 +141,7 @@ class ReportController extends Controller
                 ->with('success', 'Report updated successfully.');
         } catch (\Exception $e) {
             return redirect()->back()->withInput()
-                ->with('error', 'Failed to update report. Please try again.');
+                ->with('error', 'Failed to update report: ' . $e->getMessage());
         }
     }
 
@@ -195,44 +197,27 @@ class ReportController extends Controller
                 ];
                 break;
 
-            case 'purchase_order':
-                $query = PurchaseOrder::with(['supplier', 'orderDetails.product'])
-                    ->whereBetween('created_at', [$startDate, $endDate]);
+            case 'stock_out_order':
+                $query = StockOutOrder::with(['details.product', 'issuedByUser'])
+                    ->whereBetween('issue_date', [$startDate, $endDate]);
 
                 if (! empty($parameters['status'])) {
                     $query->where('status', $parameters['status']);
                 }
 
-                if (! empty($parameters['supplier_id'])) {
-                    $query->where('supplier_id', $parameters['supplier_id']);
+                if (! empty($parameters['recipient'])) {
+                    $query->where('recipient', 'like', '%' . $parameters['recipient'] . '%');
                 }
 
-                $purchaseOrders = $query->get();
-                $data['purchase_orders'] = $purchaseOrders->toArray();
+                $stockOutOrders = $query->get();
+                $data['stock_out_orders'] = $stockOutOrders->toArray();
                 $data['summary'] = [
-                    'total_orders' => $purchaseOrders->count(),
-                    'total_amount' => $purchaseOrders->sum('total_amount'),
-                    'pending_orders' => $purchaseOrders->where('status', 'pending')->count(),
-                    'completed_orders' => $purchaseOrders->whereIn('status', ['received', 'completed'])->count(),
-                ];
-                break;
-
-            case 'issue':
-                $query = DB::table('inventory_issues')
-                    ->join('products', 'inventory_issues.product_id', '=', 'products.id')
-                    ->join('employees', 'inventory_issues.employee_id', '=', 'employees.id')
-                    ->select(
-                        'inventory_issues.*',
-                        'products.name as product_name',
-                        'employees.name as employee_name'
-                    )
-                    ->whereBetween('issue_date', [$startDate, $endDate]);
-
-                $issues = $query->get();
-                $data['issues'] = $issues->toArray();
-                $data['summary'] = [
-                    'total_issues' => $issues->count(),
-                    'total_items_issued' => $issues->sum('quantity_issued'),
+                    'total_orders' => $stockOutOrders->count(),
+                    'total_amount' => $stockOutOrders->sum('total_amount'),
+                    'pending_orders' => $stockOutOrders->where('status', 'pending')->count(),
+                    'approved_orders' => $stockOutOrders->where('status', 'approved')->count(),
+                    'issued_orders' => $stockOutOrders->where('status', 'issued')->count(),
+                    'cancelled_orders' => $stockOutOrders->where('status', 'cancelled')->count(),
                 ];
                 break;
 
